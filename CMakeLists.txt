@@ -1,0 +1,59 @@
+cmake_minimum_required(VERSION 3.20)
+project(PLUSKAIZO)
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(EXECUTABLE_NAME PLUSKAIZO)
+
+# set the output directory for built objects.
+# this makes sure that the dynamic libraries goes into the build directory automatically.
+set(PLUSKAIZO_LIB_INSTALL_DIR ${CMAKE_BINARY_DIR}/local_libs)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PLUSKAIZO_LIB_INSTALL_DIR}")
+
+# static only
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
+
+# dont build sdl3 tests
+set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
+set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+# add SDL3 libs
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3 EXCLUDE_FROM_ALL)
+
+set(PLUSKAIZO_FRAMEWORK_SRC_FILES
+    src/framework/main.cpp
+    src/framework/window.cpp
+    src/framework/window.h
+)
+
+set(PLUSKAIZO_COMPRESS_SRC_FILES
+    src/compress/main.cpp
+)
+
+add_executable(${EXECUTABLE_NAME} ${PLUSKAIZO_FRAMEWORK_SRC_FILES})
+# add_executable(${EXECUTABLE_NAME}-IMG ${PLUSKAIZO_COMPRESS_SRC_FILES})
+
+target_include_directories(${EXECUTABLE_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+# we should not need to include standard libraries as .dll/.so
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    target_link_options(${EXECUTABLE_NAME} PRIVATE -static-libgcc)
+    target_link_options(${EXECUTABLE_NAME} PRIVATE -static-libstdc++)
+elseif(MINGW)
+    target_link_options(${EXECUTABLE_NAME} PRIVATE --static)
+endif()
+
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE
+    SDL3::SDL3
+)
+
+# copy game
+add_custom_target(PLUSKAIZO_GAME ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/game/ ${CMAKE_BINARY_DIR}/game/
+    )
+
+add_dependencies(${EXECUTABLE_NAME} PLUSKAIZO_GAME)
