@@ -7,30 +7,31 @@ bool CKZWindow::Init()
     pMainWindow = SDL_CreateWindow("+KAIZO", Width, Height, SDL_WINDOW_RESIZABLE);
     if(!pMainWindow)
     {
-        fprintf(stderr, "ERROR INIT SDL: %s\n", SDL_GetError());
+        printf("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
 
     pMainWindowRenderer = SDL_CreateRenderer(pMainWindow, nullptr);
     if(!pMainWindowRenderer)
     {
-        fprintf(stderr, "ERROR INIT SDL: %s\n", SDL_GetError());
+        printf("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
 
     pMainSurface = SDL_CreateSurface(Width, Height, SDL_GetWindowPixelFormat(pMainWindow));
     if(!pMainSurface)
     {
-        fprintf(stderr, "ERROR INIT SDL: %s\n", SDL_GetError());
+        printf("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
 
     pMainTexture = SDL_CreateTexture(pMainWindowRenderer, SDL_GetWindowPixelFormat(pMainWindow), SDL_TEXTUREACCESS_STREAMING, Width, Height);
     if(!pMainTexture)
     {
-        fprintf(stderr, "ERROR INIT SDL: %s\n", SDL_GetError());
+        printf("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
+    SDL_SetTextureScaleMode(pMainTexture, SDL_SCALEMODE_PIXELART);
 
     return true;
 }

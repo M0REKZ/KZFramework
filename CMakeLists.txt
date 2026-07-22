@@ -16,16 +16,26 @@ set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
 
 # dont build sdl3 tests
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(SDL_TEST_LIBRARY OFF CACHE BOOL "" FORCE)
 set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 # add SDL3 libs
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3 EXCLUDE_FROM_ALL)
 
+set(SDLMIXER_VENDORED ON CACHE BOOL "" FORCE)
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_mixer EXCLUDE_FROM_ALL)
+
 set(PLUSKAIZO_FRAMEWORK_SRC_FILES
-    src/framework/main.cpp
+    src/framework/images.cpp
+    src/framework/images.h
+    src/framework/sounds.cpp
+    src/framework/sounds.h
     src/framework/window.cpp
     src/framework/window.h
+
+    src/framework/main.cpp
 )
 
 set(PLUSKAIZO_COMPRESS_SRC_FILES
@@ -49,6 +59,7 @@ endif()
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3::SDL3
+    SDL3_mixer::SDL3_mixer
 )
 
 # copy game

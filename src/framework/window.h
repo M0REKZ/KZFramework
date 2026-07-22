@@ -1,3 +1,6 @@
+#ifndef PLUSKAIZO_WINDOW_H
+#define PLUSKAIZO_WINDOW_H
+
 #include <SDL3/SDL.h>
 
 class CKZWindow
@@ -30,3 +33,5 @@ public:
 };
 
 extern CKZWindow KZWindow;
+
+#endif

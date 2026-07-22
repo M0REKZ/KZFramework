@@ -1,3 +1,6 @@
 [submodule "lib/SDL3"]
 	path = lib/SDL3
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "lib/SDL3_mixer"]
+	path = lib/SDL3_mixer
+	url = https://github.com/libsdl-org/SDL_mixer.git
