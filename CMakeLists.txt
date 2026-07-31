@@ -28,22 +28,18 @@ set(SDLMIXER_VENDORED ON CACHE BOOL "" FORCE)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_mixer EXCLUDE_FROM_ALL)
 
 set(PLUSKAIZO_FRAMEWORK_SRC_FILES
-    src/framework/images.cpp
-    src/framework/images.h
-    src/framework/sounds.cpp
-    src/framework/sounds.h
-    src/framework/window.cpp
-    src/framework/window.h
-
-    src/framework/main.cpp
-)
-
-set(PLUSKAIZO_COMPRESS_SRC_FILES
-    src/compress/main.cpp
+    src/images.cpp
+    src/images.h
+    src/input.cpp
+    src/input.h
+    src/sounds.cpp
+    src/sounds.h
+    src/window.cpp
+    src/window.h
+    src/main.cpp
 )
 
 add_executable(${EXECUTABLE_NAME} ${PLUSKAIZO_FRAMEWORK_SRC_FILES})
-# add_executable(${EXECUTABLE_NAME}-IMG ${PLUSKAIZO_COMPRESS_SRC_FILES})
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
