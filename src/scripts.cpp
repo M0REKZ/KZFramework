@@ -25,6 +25,62 @@ static int KZWindowBindDrawFillRect(lua_State * ls)
     return 1;
 }
 
+static int KZWindowBindDrawLine(lua_State * ls)
+{
+    int x_from = luaL_checkinteger(ls, 1);
+    int y_from = luaL_checkinteger(ls, 2);
+    int x_to = luaL_checkinteger(ls, 3);
+    int y_to = luaL_checkinteger(ls, 4);
+    Uint32 color = luaL_checkinteger(ls, 5);
+
+    KZWindow.DrawLine(x_from, y_from, x_to, y_to, color);
+    return 1;
+}
+
+static int KZWindowBindDrawRect(lua_State * ls)
+{
+    int x_from = luaL_checkinteger(ls, 1);
+    int y_from = luaL_checkinteger(ls, 2);
+    int x_to = luaL_checkinteger(ls, 3);
+    int y_to = luaL_checkinteger(ls, 4);
+    Uint32 color = luaL_checkinteger(ls, 5);
+
+    KZWindow.DrawRect(x_from, y_from, x_to, y_to, color);
+    return 1;
+}
+
+static int KZWindowBindDrawEllipse(lua_State * ls)
+{
+    int cx = luaL_checkinteger(ls, 1);
+    int cy = luaL_checkinteger(ls, 2);
+    int rx = luaL_checkinteger(ls, 3);
+    int ry = luaL_checkinteger(ls, 4);
+    Uint32 color = luaL_checkinteger(ls, 5);
+
+    KZWindow.DrawEllipse(cx, cy, rx, ry, color);
+    return 1;
+}
+
+static int KZWindowBindDrawFillEllipse(lua_State * ls)
+{
+    int cx = luaL_checkinteger(ls, 1);
+    int cy = luaL_checkinteger(ls, 2);
+    int rx = luaL_checkinteger(ls, 3);
+    int ry = luaL_checkinteger(ls, 4);
+    Uint32 color = luaL_checkinteger(ls, 5);
+
+    KZWindow.DrawFillEllipse(cx, cy, rx, ry, color);
+    return 1;
+}
+
+static int KZWindowBindDelay(lua_State * ls)
+{
+    int ms = luaL_checkinteger(ls, 1);
+
+    KZWindow.Delay(ms);
+    return 1;
+}
+
 static int KZWindowBindConverToWindowDrawColor(lua_State * ls)
 {
     Uint8 r = luaL_checkinteger(ls, 1);
@@ -36,9 +92,28 @@ static int KZWindowBindConverToWindowDrawColor(lua_State * ls)
     return 1;
 }
 
+static int KZWindow_GetWidth(lua_State * ls)
+{
+    lua_pushinteger(CKZScripts::MainLuaState, KZWindow.Width);
+    return 1;
+}
+
+static int KZWindow_GetHeight(lua_State * ls)
+{
+    lua_pushinteger(CKZScripts::MainLuaState, KZWindow.Height);
+    return 1;
+}
+
 static const luaL_Reg KZWindowBind[] = {
-    {"DrawFillRect", KZWindowBindDrawFillRect},
     {"ConvertToWindowDrawColor", KZWindowBindConverToWindowDrawColor},
+    {"DrawFillRect", KZWindowBindDrawFillRect},
+    {"DrawRect", KZWindowBindDrawRect},
+    {"DrawLine", KZWindowBindDrawLine},
+    {"DrawEllipse", KZWindowBindDrawEllipse},
+    {"DrawFillEllipse", KZWindowBindDrawFillEllipse},
+    {"Delay", KZWindowBindDelay},
+    {"GetWidth", KZWindow_GetWidth},
+    {"GetHeight", KZWindow_GetHeight},
     {NULL, NULL}
 };
 
