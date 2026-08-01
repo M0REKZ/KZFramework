@@ -4,3 +4,6 @@
 [submodule "lib/SDL3_mixer"]
 	path = lib/SDL3_mixer
 	url = https://github.com/libsdl-org/SDL_mixer.git
+[submodule "lib/LuaJIT"]
+	path = lib/LuaJIT
+	url = https://github.com/WohlSoft/LuaJIT.git

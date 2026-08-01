@@ -27,11 +27,16 @@ set(SDLMIXER_VENDORED ON CACHE BOOL "" FORCE)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_mixer EXCLUDE_FROM_ALL)
 
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/LuaJIT EXCLUDE_FROM_ALL)
+
 set(PLUSKAIZO_FRAMEWORK_SRC_FILES
     src/images.cpp
     src/images.h
     src/input.cpp
     src/input.h
+    src/scripts.cpp
+    src/scripts.h
     src/sounds.cpp
     src/sounds.h
     src/window.cpp
@@ -56,6 +61,7 @@ endif()
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3::SDL3
     SDL3_mixer::SDL3_mixer
+    libluajit
 )
 
 # copy game
