@@ -31,7 +31,7 @@ int main(int argc, char ** args)
 
     SDL_Event e;
     bool running = true;
-    int idk = KZImages.LoadImage(0);
+    KZImages.LoadImage(0);
     /*int idksound = KZSounds.LoadAudio(1, true);
     KZSounds.PlayAudio(1, true);*/
 
@@ -67,7 +67,8 @@ int main(int argc, char ** args)
         KZWindow.DrawEllipse( KZWindow.Width / 2, KZWindow.Height / 2, KZWindow.Width / 4, KZWindow.Height / 4, KZWindow.ConverToWindowDrawColor(0, 0, 0, 255));
         KZWindow.DrawRect(100, 100, 200, 200, KZWindow.ConverToWindowDrawColor(255, 0, 0, 255));*/
 
-        KZScripts.RunScript("game/main.lua");
+        if(!KZScripts.RunScript("game/main.lua"))
+            break;
 
         KZWindow.UpdateWindow();
 

@@ -8,6 +8,9 @@ extern "C"
 
 #include "scripts.h"
 #include "window.h"
+#include "images.h"
+#include "sounds.h"
+#include "input.h"
 
 lua_State * CKZScripts::MainLuaState = nullptr;
 
@@ -88,22 +91,168 @@ static int KZWindowBindConverToWindowDrawColor(lua_State * ls)
     Uint8 b = luaL_checkinteger(ls, 3);
     Uint8 a = luaL_checkinteger(ls, 4);
 
-    lua_pushinteger(CKZScripts::MainLuaState, KZWindow.ConverToWindowDrawColor(r, g, b, a));
+    lua_pushinteger(ls, KZWindow.ConverToWindowDrawColor(r, g, b, a));
     return 1;
 }
 
 static int KZWindow_GetWidth(lua_State * ls)
 {
-    lua_pushinteger(CKZScripts::MainLuaState, KZWindow.Width);
+    lua_pushinteger(ls, KZWindow.Width);
     return 1;
 }
 
 static int KZWindow_GetHeight(lua_State * ls)
 {
-    lua_pushinteger(CKZScripts::MainLuaState, KZWindow.Height);
+    lua_pushinteger(ls, KZWindow.Height);
     return 1;
 }
 
+static int KZImagesBindLoadImage(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    lua_pushinteger(ls, KZImages.LoadImage(id));
+    return 1;
+}
+
+static int KZImagesBindUnloadImage(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    KZImages.UnloadImage(id);
+    return 1;
+}
+
+static int KZImagesBindRenderImage(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+    int x_from = luaL_optinteger(ls, 2, 0);
+    int y_from = luaL_optinteger(ls, 3, 0);
+    int w_from = luaL_optinteger(ls, 4, KZImages.GetImageWidth(id));
+    int h_from = luaL_optinteger(ls, 5, KZImages.GetImageHeight(id));
+    int x_to = luaL_checkinteger(ls, 6);
+    int y_to = luaL_checkinteger(ls, 7);
+    int w_to = luaL_optinteger(ls, 8, KZImages.GetImageWidth(id));
+    int h_to = luaL_optinteger(ls, 9, KZImages.GetImageHeight(id));
+
+    KZImages.RenderImage(id, x_from, y_from, w_from, h_from, x_to, y_to, w_to, h_to);
+    return 1;
+}
+
+static int KZImagesBindUnloadAllImages(lua_State * ls)
+{
+    KZImages.UnloadAllImages();
+    return 1;
+}
+
+static int KZWindow_GetImageWidth(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    lua_pushinteger(ls, KZImages.GetImageWidth(id));
+    return 1;
+}
+
+static int KZWindow_GetImageHeight(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+    
+    lua_pushinteger(ls, KZImages.GetImageHeight(id));
+    return 1;
+}
+
+static int KZSoundsBindLoadAudio(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+    bool predecode = lua_toboolean(ls, 2);
+
+    lua_pushinteger(ls, KZSounds.LoadAudio(id, predecode));
+    return 1;
+}
+
+static int KZSoundsBindLoadMusic(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    lua_pushinteger(ls, KZSounds.LoadMusic(id));
+    return 1;
+}
+
+static int KZSoundsBindLoadSoundEffect(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    lua_pushinteger(ls, KZSounds.LoadSoundEffect(id));
+    return 1;
+}
+
+static int KZSoundsBindPlayAudio(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+    bool loop = lua_toboolean(ls, 2);
+
+    lua_pushboolean(ls, KZSounds.PlayAudio(id, loop));
+    return 1;
+}
+
+static int KZSoundsBindUnloadSound(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    KZSounds.UnloadSound(id);
+    return 1;
+}
+
+static int KZSoundsBindUnloadAllSounds(lua_State * ls)
+{
+    KZSounds.UnloadAllSounds();
+    return 1;
+}
+
+static int KZInput_GetInputState(lua_State * ls)
+{
+    lua_newtable(ls);
+
+    lua_pushboolean(ls, KZInput.InputState.Up);
+    lua_setfield(ls, -2, "Up");
+
+    lua_pushboolean(ls, KZInput.InputState.Down);
+    lua_setfield(ls, -2, "Down");
+
+    lua_pushboolean(ls, KZInput.InputState.Left);
+    lua_setfield(ls, -2, "Left");
+
+    lua_pushboolean(ls, KZInput.InputState.Right);
+    lua_setfield(ls, -2, "Right");
+
+    lua_pushboolean(ls, KZInput.InputState.Jump);
+    lua_setfield(ls, -2, "Jump");
+
+    lua_pushboolean(ls, KZInput.InputState.AltJump);
+    lua_setfield(ls, -2, "AltJump");
+
+    lua_pushboolean(ls, KZInput.InputState.Run);
+    lua_setfield(ls, -2, "Run");
+
+    lua_pushboolean(ls, KZInput.InputState.AltRun);
+    lua_setfield(ls, -2, "AltRun");
+
+    lua_pushnumber(ls, KZInput.InputState.MouseX);
+    lua_setfield(ls, -2, "MouseX");
+
+    lua_pushnumber(ls, KZInput.InputState.MouseY);
+    lua_setfield(ls, -2, "MouseY");
+
+    lua_pushboolean(ls, KZInput.InputState.MouseClick);
+    lua_setfield(ls, -2, "MouseClick");
+
+    lua_pushboolean(ls, KZInput.InputState.MouseRightClick);
+    lua_setfield(ls, -2, "MouseRightClick");
+
+    return 1;
+}
+
+//KZWindow
 static const luaL_Reg KZWindowBind[] = {
     {"ConvertToWindowDrawColor", KZWindowBindConverToWindowDrawColor},
     {"DrawFillRect", KZWindowBindDrawFillRect},
@@ -117,6 +266,35 @@ static const luaL_Reg KZWindowBind[] = {
     {NULL, NULL}
 };
 
+//KZImages
+static const luaL_Reg KZImagesBind[] = {
+    {"LoadImage", KZImagesBindLoadImage},
+    {"UnloadImage", KZImagesBindUnloadImage},
+    {"UnloadAllImages", KZImagesBindUnloadAllImages},
+    {"RenderImage", KZImagesBindRenderImage},
+    {"GetImageWidth", KZWindow_GetImageWidth},
+    {"GetImageHeight", KZWindow_GetImageHeight},
+    {NULL, NULL}
+};
+
+//KZSounds
+static const luaL_Reg KZSoundsBind[] = {
+    {"LoadAudio", KZSoundsBindLoadAudio},
+    {"LoadMusic", KZSoundsBindLoadMusic},
+    {"LoadSoundEffect", KZSoundsBindLoadSoundEffect},
+    {"PlayAudio", KZSoundsBindPlayAudio},
+    {"UnloadAllSounds", KZSoundsBindUnloadAllSounds},
+    {"UnloadSound", KZSoundsBindUnloadSound},
+    {NULL, NULL}
+};
+
+//KZInput
+static const luaL_Reg KZInputBind[] = {
+    {"InputState", KZInput_GetInputState},
+    {NULL, NULL}
+};
+
+
 bool CKZScripts::Init()
 {
     MainLuaState = luaL_newstate();
@@ -126,6 +304,9 @@ bool CKZScripts::Init()
 
         //push needed functions
         luaL_register(MainLuaState, "KZWindow", KZWindowBind);
+        luaL_register(MainLuaState, "KZImages", KZImagesBind);
+        luaL_register(MainLuaState, "KZSounds", KZImagesBind);
+        luaL_register(MainLuaState, "KZInput", KZInputBind);
     }
     return MainLuaState != nullptr;
 }

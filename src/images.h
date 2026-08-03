@@ -14,6 +14,32 @@ class CKZImages
     void RenderImage(unsigned int img, int x_from, int y_from, int w_from, int h_from, int x_to, int y_to, int w_to, int h_to);
     void UnloadAllImages();
     void UnloadImage(unsigned int img);
+
+    inline int GetImageWidth(unsigned int img)
+    {
+        try
+        {
+            return LoadedImages.at(img)->w;
+        }
+        catch(const std::out_of_range & e)
+        {
+            printf("Could not get image %u: %s\n", img, e.what());
+            return 0;
+        }
+    }
+
+    inline int GetImageHeight(unsigned int img)
+    {
+        try
+        {
+            return LoadedImages.at(img)->h;
+        }
+        catch(const std::out_of_range & e)
+        {
+            printf("Could not get image %u: %s\n", img, e.what());
+            return 0;
+        }
+    }
 };
 
 extern CKZImages KZImages;
