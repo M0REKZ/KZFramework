@@ -11,6 +11,7 @@ extern "C"
 #include "images.h"
 #include "sounds.h"
 #include "input.h"
+#include "files.h"
 
 lua_State * CKZScripts::MainLuaState = nullptr;
 
@@ -252,6 +253,50 @@ static int KZInput_GetInputState(lua_State * ls)
     return 1;
 }
 
+static int KZFilesBindOpenFileForWriting(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    bool bin = lua_toboolean(ls, 2);
+    if(pArg)
+    {
+        lua_pushboolean(ls, KZFiles.OpenFileForWriting(pArg, bin));
+    }
+    return 1;
+}
+
+static int KZFilesBindOpenFileForReading(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    bool bin = lua_toboolean(ls, 2);
+    if(pArg)
+    {
+        lua_pushboolean(ls, KZFiles.OpenFileForReading(pArg, bin));
+    }
+    return 1;
+}
+
+static int KZFilesBindWriteLine(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    if(pArg)
+    {
+        lua_pushboolean(ls, KZFiles.WriteLine(pArg));
+    }
+    return 1;
+}
+
+static int KZFilesBindGetNextLine(lua_State * ls)
+{
+    lua_pushstring(ls, KZFiles.GetNextLine());
+    return 1;
+}
+
+static int KZFilesBindCloseFile(lua_State * ls)
+{
+    KZFiles.CloseFile();
+    return 1;
+}
+
 //KZWindow
 static const luaL_Reg KZWindowBind[] = {
     {"ConvertToWindowDrawColor", KZWindowBindConverToWindowDrawColor},
@@ -294,6 +339,16 @@ static const luaL_Reg KZInputBind[] = {
     {NULL, NULL}
 };
 
+//KZFiles
+static const luaL_Reg KZFilesBind[] = {
+    {"OpenFileForWriting", KZFilesBindOpenFileForWriting},
+    {"OpenFileForReading", KZFilesBindOpenFileForReading},
+    {"WriteLine", KZFilesBindWriteLine},
+    {"GetNextLine", KZFilesBindGetNextLine},
+    {"CloseFile", KZFilesBindCloseFile},
+    {NULL, NULL}
+};
+
 
 bool CKZScripts::Init()
 {
@@ -307,6 +362,7 @@ bool CKZScripts::Init()
         luaL_register(MainLuaState, "KZImages", KZImagesBind);
         luaL_register(MainLuaState, "KZSounds", KZImagesBind);
         luaL_register(MainLuaState, "KZInput", KZInputBind);
+        luaL_register(MainLuaState, "KZFiles", KZFilesBind);
     }
     return MainLuaState != nullptr;
 }

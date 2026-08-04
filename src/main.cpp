@@ -7,10 +7,11 @@
 #include "sounds.h"
 #include "scripts.h"
 #include "input.h"
+#include "files.h"
 
 bool init_everything()
 {
-    return KZWindow.Init() && KZSounds.Init() && KZScripts.Init();
+    return KZWindow.Init() && KZSounds.Init() && KZFiles.Init() && KZScripts.Init();
 }
 
 void destroy_everything()

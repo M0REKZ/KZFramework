@@ -1,7 +1,5 @@
 
 
-KZWindow.DrawFillRect(0,0,KZWindow.GetWidth(),KZWindow.GetHeight(),KZWindow.ConvertToWindowDrawColor(0,0,0,255));
-
 if(x == nil) then
     x = 0
 end
@@ -24,5 +22,26 @@ elseif(input.Down) then
     y = y + 1
 end
 
-KZWindow.DrawFillRect(x,y,100,100,KZWindow.ConvertToWindowDrawColor(255,0,255,255));
+KZWindow.DrawFillRect(x,y,10,10,KZWindow.ConvertToWindowDrawColor(255,0,255,255));
+
+
+if xd == nil then
+    xd = 2
+end
+
+if xd == 1 then
+    KZFiles.OpenFileForWriting("test.txt")
+    KZFiles.WriteLine("Hello World!")
+    KZFiles.CloseFile()
+
+    xd = 5
+end
+
+if xd == 2 then
+    KZFiles.OpenFileForReading("test.txt")
+    local axd = KZFiles.GetNextLine()
+    KZFiles.CloseFile()
+    print(axd)
+    xd = 5
+end
 
