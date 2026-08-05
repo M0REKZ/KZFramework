@@ -127,14 +127,16 @@ static int KZImagesBindUnloadImage(lua_State * ls)
 static int KZImagesBindRenderImage(lua_State * ls)
 {
     unsigned int id = luaL_checkinteger(ls, 1);
-    int x_from = luaL_optinteger(ls, 2, 0);
-    int y_from = luaL_optinteger(ls, 3, 0);
-    int w_from = luaL_optinteger(ls, 4, KZImages.GetImageWidth(id));
-    int h_from = luaL_optinteger(ls, 5, KZImages.GetImageHeight(id));
-    int x_to = luaL_checkinteger(ls, 6);
-    int y_to = luaL_checkinteger(ls, 7);
-    int w_to = luaL_optinteger(ls, 8, KZImages.GetImageWidth(id));
-    int h_to = luaL_optinteger(ls, 9, KZImages.GetImageHeight(id));
+    
+    int x_from = (int)std::floor(luaL_optnumber(ls, 2, 0));
+    int y_from = (int)std::floor(luaL_optnumber(ls, 3, 0));
+    int w_from = (int)std::floor(luaL_optnumber(ls, 4, KZImages.GetImageWidth(id)));
+    int h_from = (int)std::floor(luaL_optnumber(ls, 5, KZImages.GetImageHeight(id)));
+
+    int x_to = (int)std::floor(luaL_checknumber(ls, 6));
+    int y_to = (int)std::floor(luaL_checknumber(ls, 7));
+    int w_to = (int)std::floor(luaL_optnumber(ls, 8, KZImages.GetImageWidth(id)));
+    int h_to = (int)std::floor(luaL_optnumber(ls, 9, KZImages.GetImageHeight(id)));
 
     KZImages.RenderImage(id, x_from, y_from, w_from, h_from, x_to, y_to, w_to, h_to);
     return 1;

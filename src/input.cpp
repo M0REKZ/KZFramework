@@ -63,6 +63,18 @@ void CKZInput::HandleInput(SDL_Event e)
                 InputState.Right = true;
             QueuedInput.Right = e.key.down;
             break;
+
+        case SDLK_Z:
+            if(e.type == SDL_EVENT_KEY_DOWN)
+                InputState.Jump = true;
+            QueuedInput.Jump = e.key.down;
+            break;
+
+        case SDLK_S:
+            if(e.type == SDL_EVENT_KEY_DOWN)
+                InputState.Run = true;
+            QueuedInput.Run = e.key.down;
+            break;
         
         default:
             break;

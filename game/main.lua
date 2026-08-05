@@ -1,47 +1,51 @@
 
+package.path = package.path .. ";./game/?.lua" .. ";./game/?/init.lua"
 
-if(x == nil) then
-    x = 0
+require "globals"
+
+require "context"
+require "level"
+require "room"
+
+require "entities.block"
+require "entities.player"
+
+if(not Init) then
+    print("By +KZ")
+
+
+    KaizoLevel:Reset()
+
+    local testroom = KaizoRoom:Create()
+    testroom.x = -190
+    testroom.y = -20
+    testroom.w = 700
+    testroom.h = 600
+    testroom.image_id = KZImages.LoadImage(1)
+
+    local o = KaizoEntityBlock:Create(testroom)
+    o.x = 170
+    o.y = 170
+    o = nil
+    o = KaizoEntityBlock:Create(testroom)
+    o.x = 170 - o.w
+    o.y = 170 -- o.h
+    o = nil
+
+    for i = 1, 5, 1 do
+        o = KaizoEntityBlock:Create(testroom)
+        o.y = 170 -- o.h 
+
+        o.x = 170 - (o.w * i)
+    end
+    
+    KaizoEntityPlayer:Create(testroom)
+
+    KaizoLevel.rooms[1] = testroom
+
+    Init = true
 end
 
-if(y == nil) then
-    y = 0
-end
+KaizoContext:Update()
 
-local input = KZInput.InputState()
-
-if(input.Left) then
-    x = x - 1
-elseif(input.Right) then
-    x = x + 1
-end
-
-if(input.Up) then
-    y = y - 1
-elseif(input.Down) then
-    y = y + 1
-end
-
-KZWindow.DrawFillRect(x,y,10,10,KZWindow.ConvertToWindowDrawColor(255,0,255,255));
-
-
-if xd == nil then
-    xd = 2
-end
-
-if xd == 1 then
-    KZFiles.OpenFileForWriting("test.txt")
-    KZFiles.WriteLine("Hello World!")
-    KZFiles.CloseFile()
-
-    xd = 5
-end
-
-if xd == 2 then
-    KZFiles.OpenFileForReading("test.txt")
-    local axd = KZFiles.GetNextLine()
-    KZFiles.CloseFile()
-    print(axd)
-    xd = 5
-end
-
+KaizoContext:Render()
