@@ -26,6 +26,10 @@ public:
 
     void UpdateWindow();
 
+    //Window
+
+    bool ChangeWindowTitle(const char * pnewtitle);
+
     //Drawing
 
     inline Uint32 ConverToWindowDrawColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)

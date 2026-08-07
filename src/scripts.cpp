@@ -17,6 +17,13 @@ lua_State * CKZScripts::MainLuaState = nullptr;
 
 CKZScripts KZScripts;
 
+static int KZWindowBindChangeWindowTitle(lua_State * ls)
+{
+    const char * title = luaL_checkstring(ls, 1);
+    lua_pushboolean(ls, KZWindow.ChangeWindowTitle(title));
+    return 1;
+}
+
 static int KZWindowBindDrawFillRect(lua_State * ls)
 {
     int x_from = luaL_checkinteger(ls, 1);
@@ -26,7 +33,7 @@ static int KZWindowBindDrawFillRect(lua_State * ls)
     Uint32 color = luaL_checkinteger(ls, 5);
 
     KZWindow.DrawFillRect(x_from, y_from, x_to, y_to, color);
-    return 1;
+    return 0;
 }
 
 static int KZWindowBindDrawLine(lua_State * ls)
@@ -38,7 +45,7 @@ static int KZWindowBindDrawLine(lua_State * ls)
     Uint32 color = luaL_checkinteger(ls, 5);
 
     KZWindow.DrawLine(x_from, y_from, x_to, y_to, color);
-    return 1;
+    return 0;
 }
 
 static int KZWindowBindDrawRect(lua_State * ls)
@@ -50,7 +57,7 @@ static int KZWindowBindDrawRect(lua_State * ls)
     Uint32 color = luaL_checkinteger(ls, 5);
 
     KZWindow.DrawRect(x_from, y_from, x_to, y_to, color);
-    return 1;
+    return 0;
 }
 
 static int KZWindowBindDrawEllipse(lua_State * ls)
@@ -62,7 +69,7 @@ static int KZWindowBindDrawEllipse(lua_State * ls)
     Uint32 color = luaL_checkinteger(ls, 5);
 
     KZWindow.DrawEllipse(cx, cy, rx, ry, color);
-    return 1;
+    return 0;
 }
 
 static int KZWindowBindDrawFillEllipse(lua_State * ls)
@@ -74,7 +81,7 @@ static int KZWindowBindDrawFillEllipse(lua_State * ls)
     Uint32 color = luaL_checkinteger(ls, 5);
 
     KZWindow.DrawFillEllipse(cx, cy, rx, ry, color);
-    return 1;
+    return 0;
 }
 
 static int KZWindowBindDelay(lua_State * ls)
@@ -82,7 +89,7 @@ static int KZWindowBindDelay(lua_State * ls)
     int ms = luaL_checkinteger(ls, 1);
 
     KZWindow.Delay(ms);
-    return 1;
+    return 0;
 }
 
 static int KZWindowBindConverToWindowDrawColor(lua_State * ls)
@@ -121,7 +128,7 @@ static int KZImagesBindUnloadImage(lua_State * ls)
     unsigned int id = luaL_checkinteger(ls, 1);
 
     KZImages.UnloadImage(id);
-    return 1;
+    return 0;
 }
 
 static int KZImagesBindRenderImage(lua_State * ls)
@@ -139,13 +146,13 @@ static int KZImagesBindRenderImage(lua_State * ls)
     int h_to = (int)std::floor(luaL_optnumber(ls, 9, KZImages.GetImageHeight(id)));
 
     KZImages.RenderImage(id, x_from, y_from, w_from, h_from, x_to, y_to, w_to, h_to);
-    return 1;
+    return 0;
 }
 
 static int KZImagesBindUnloadAllImages(lua_State * ls)
 {
     KZImages.UnloadAllImages();
-    return 1;
+    return 0;
 }
 
 static int KZWindow_GetImageWidth(lua_State * ls)
@@ -203,13 +210,13 @@ static int KZSoundsBindUnloadSound(lua_State * ls)
     unsigned int id = luaL_checkinteger(ls, 1);
 
     KZSounds.UnloadSound(id);
-    return 1;
+    return 0;
 }
 
 static int KZSoundsBindUnloadAllSounds(lua_State * ls)
 {
     KZSounds.UnloadAllSounds();
-    return 1;
+    return 0;
 }
 
 static int KZInput_GetInputState(lua_State * ls)
@@ -262,8 +269,9 @@ static int KZFilesBindOpenFileForWriting(lua_State * ls)
     if(pArg)
     {
         lua_pushboolean(ls, KZFiles.OpenFileForWriting(pArg, bin));
+        return 1;
     }
-    return 1;
+    return 0;
 }
 
 static int KZFilesBindOpenFileForReading(lua_State * ls)
@@ -273,8 +281,9 @@ static int KZFilesBindOpenFileForReading(lua_State * ls)
     if(pArg)
     {
         lua_pushboolean(ls, KZFiles.OpenFileForReading(pArg, bin));
+        return 1;
     }
-    return 1;
+    return 0;
 }
 
 static int KZFilesBindWriteLine(lua_State * ls)
@@ -283,8 +292,9 @@ static int KZFilesBindWriteLine(lua_State * ls)
     if(pArg)
     {
         lua_pushboolean(ls, KZFiles.WriteLine(pArg));
+        return 1;
     }
-    return 1;
+    return 0;
 }
 
 static int KZFilesBindGetNextLine(lua_State * ls)
@@ -296,7 +306,7 @@ static int KZFilesBindGetNextLine(lua_State * ls)
 static int KZFilesBindCloseFile(lua_State * ls)
 {
     KZFiles.CloseFile();
-    return 1;
+    return 0;
 }
 
 //KZWindow
@@ -310,6 +320,7 @@ static const luaL_Reg KZWindowBind[] = {
     {"Delay", KZWindowBindDelay},
     {"GetWidth", KZWindow_GetWidth},
     {"GetHeight", KZWindow_GetHeight},
+    {"ChangeWindowTitle", KZWindowBindChangeWindowTitle},
     {NULL, NULL}
 };
 

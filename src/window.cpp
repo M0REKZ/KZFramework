@@ -7,7 +7,7 @@ CKZWindow KZWindow;
 
 bool CKZWindow::Init()
 {
-    pMainWindow = SDL_CreateWindow("+KAIZO", Width, Height, SDL_WINDOW_RESIZABLE);
+    pMainWindow = SDL_CreateWindow("+KZ Framework Game", Width, Height, SDL_WINDOW_RESIZABLE);
     if(!pMainWindow)
     {
         printf("ERROR INIT SDL: %s\n", SDL_GetError());
@@ -77,6 +77,14 @@ void CKZWindow::UpdateWindow()
         //
         SDL_RenderPresent(pMainWindowRenderer);
     }
+}
+
+bool CKZWindow::ChangeWindowTitle(const char *pnewtitle)
+{
+    if(pnewtitle && SDL_SetWindowTitle(pMainWindow, pnewtitle))
+        return true;
+    printf("ERROR CHANGE WINDOW TITLE SDL: %s\n", SDL_GetError());
+    return false;
 }
 
 void CKZWindow::Delay(int ms)
