@@ -65,10 +65,3 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3_mixer::SDL3_mixer
     libluajit
 )
-
-# copy game
-add_custom_target(PLUSKAIZO_GAME ALL
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/game/ ${CMAKE_BINARY_DIR}/game/
-    )
-
-add_dependencies(${EXECUTABLE_NAME} PLUSKAIZO_GAME)
