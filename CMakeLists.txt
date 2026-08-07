@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
-project(PLUSKAIZO)
+project(KZFramework)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(EXECUTABLE_NAME PLUSKAIZO)
+set(EXECUTABLE_NAME KZGameRunner)
 
 # set the output directory for built objects.
 # this makes sure that the dynamic libraries goes into the build directory automatically.
-set(PLUSKAIZO_LIB_INSTALL_DIR ${CMAKE_BINARY_DIR}/local_libs)
+set(KZFRAMEWORK_LIB_INSTALL_DIR ${CMAKE_BINARY_DIR}/local_libs)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PLUSKAIZO_LIB_INSTALL_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${KZFRAMEWORK_LIB_INSTALL_DIR}")
 
 # static only
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
@@ -30,7 +30,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_mixer EXCLUDE_FROM_ALL)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/LuaJIT EXCLUDE_FROM_ALL)
 
-set(PLUSKAIZO_FRAMEWORK_SRC_FILES
+set(KZFRAMEWORK_SRC_FILES
     src/files.cpp
     src/files.h
     src/images.cpp
@@ -46,7 +46,7 @@ set(PLUSKAIZO_FRAMEWORK_SRC_FILES
     src/main.cpp
 )
 
-add_executable(${EXECUTABLE_NAME} ${PLUSKAIZO_FRAMEWORK_SRC_FILES})
+add_executable(${EXECUTABLE_NAME} ${KZFRAMEWORK_SRC_FILES})
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
