@@ -93,7 +93,8 @@ void CKZInput::UpdateInput()
 
 Uint64 CKZInput::EvilRandom()
 {
-    static Uint8 evilseed[16] = {0};
+    #define EVIL_SEED_SIZE 16
+    static Uint8 evilseed[EVIL_SEED_SIZE] = {0};
     static union
     {
         Uint64 val = 0;
@@ -103,10 +104,22 @@ Uint64 CKZInput::EvilRandom()
 
     lastind++;
 
-    evilseed[0] += (evilseed[14] + 1);
-    evilseed[1] -= (evilseed[13] - 1);
-    evilseed[2] += 2 * (evilseed[7] + 7);
-    evilseed[3] -= 2 * (evilseed[11] - 7);
+    evilseed[0] = (evilseed[0] << 1) | (
+        KZInput.InputState.Left << 0 |
+        KZInput.InputState.Right << 1 |
+        KZInput.InputState.Up << 2 |
+        KZInput.InputState.Down << 3 |
+        KZInput.InputState.Jump << 4 |
+        KZInput.InputState.AltJump << 5 |
+        KZInput.InputState.AltRun << 6 |
+        KZInput.InputState.Run << 7 |
+        (
+            evilseed[15] & 1 ? 1 : 0
+        )
+    );
+    evilseed[1] += ((1 << 2) & evilseed[0]) ? 1 : 2;
+    evilseed[2] += 2 * (evilseed[7] + 7 * evilseed[0]);
+    evilseed[3] -= 2 * (evilseed[11] - 7 * evilseed[0]);
     evilseed[4] += KZInput.InputState.Left + evilseed[0];
     evilseed[5] += KZInput.InputState.Right + evilseed[1];
     evilseed[6] += (KZInput.InputState.Jump + 1) * (evilseed[5] | 1);
@@ -115,20 +128,28 @@ Uint64 CKZInput::EvilRandom()
     evilseed[9] *= (KZInput.InputState.Run + 1) * (evilseed[7] | 1);
     evilseed[10] = KZInput.InputState.AltJump + (evilseed[9] + 1);
     evilseed[11] *= evilseed[8];
-    evilseed[12] += KZInput.InputState.AltRun;
-    evilseed[13] -= KZInput.InputState.Left ? 5 : -5;
-    evilseed[14] -= KZInput.InputState.Right ? -5 : 5;
-    evilseed[15] ^= 0xFE;
+    evilseed[12] += KZInput.InputState.AltRun * evilseed[0];
+    evilseed[13] -= KZInput.InputState.Left ? 5 * evilseed[0] : -5 * evilseed[0];
+    evilseed[14] -= KZInput.InputState.Right ? -5 * evilseed[0] : 5 * evilseed[0];
+    evilseed[15] ^= 0xFE & ((1 << 4) & evilseed[0]) ? 1 : 16;
 
-    for(int i = 0;i < 8; i++)
+    for(int i = 0; i < 8; i++)
     {
-        lastres.bytes[i] = evilseed[(lastind + i) % sizeof(evilseed)];
+        lastres.bytes[i] = evilseed[(lastind + i) % EVIL_SEED_SIZE];
     }
 
     if(lastres.bytes[0] & (1 << (lastres.val % 8)))
     {
         evilseed[15] |= 1 << 8;
     }
+    else
+    {
+        evilseed[15] &= 0xFE;
+    }
+
+    lastres.val &= 0xFF ^ (1 << (lastind % 8));
 
     return lastres.val;
+
+    #undef EVIL_SEED_SIZE
 }
