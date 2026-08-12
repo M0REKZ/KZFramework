@@ -32,6 +32,10 @@ public:
     };
     
     SState InputState;
+
+    // probably the worst way of making """""random"""""
+    Uint64 EvilRandom();
+
 private:
     SState QueuedInput;
 };

@@ -90,3 +90,45 @@ void CKZInput::UpdateInput()
 {
     memcpy(&InputState, &QueuedInput, sizeof(InputState));
 }
+
+Uint64 CKZInput::EvilRandom()
+{
+    static Uint8 evilseed[16] = {0};
+    static union
+    {
+        Uint64 val = 0;
+        Uint8 bytes[8];
+    } lastres;
+    static Uint8 lastind = 0;
+
+    lastind++;
+
+    evilseed[0] += (evilseed[14] + 1);
+    evilseed[1] -= (evilseed[13] - 1);
+    evilseed[2] += 2 * (evilseed[7] + 7);
+    evilseed[3] -= 2 * (evilseed[11] - 7);
+    evilseed[4] += KZInput.InputState.Left + evilseed[0];
+    evilseed[5] += KZInput.InputState.Right + evilseed[1];
+    evilseed[6] += (KZInput.InputState.Jump + 1) * (evilseed[5] | 1);
+    evilseed[7] -= KZInput.InputState.Up | evilseed[0];
+    evilseed[8] += KZInput.InputState.Down | 2 | evilseed[1];
+    evilseed[9] *= (KZInput.InputState.Run + 1) * (evilseed[7] | 1);
+    evilseed[10] = KZInput.InputState.AltJump + (evilseed[9] + 1);
+    evilseed[11] *= evilseed[8];
+    evilseed[12] += KZInput.InputState.AltRun;
+    evilseed[13] -= KZInput.InputState.Left ? 5 : -5;
+    evilseed[14] -= KZInput.InputState.Right ? -5 : 5;
+    evilseed[15] ^= 0xFE;
+
+    for(int i = 0;i < 8; i++)
+    {
+        lastres.bytes[i] = evilseed[(lastind + i) % sizeof(evilseed)];
+    }
+
+    if(lastres.bytes[0] & (1 << (lastres.val % 8)))
+    {
+        evilseed[15] |= 1 << 8;
+    }
+
+    return lastres.val;
+}

@@ -262,6 +262,12 @@ static int KZInput_GetInputState(lua_State * ls)
     return 1;
 }
 
+static int KZInputBindEvilRandom(lua_State * ls)
+{
+    lua_pushinteger(ls, KZInput.EvilRandom());
+    return 1;
+}
+
 static int KZFilesBindOpenFileForWriting(lua_State * ls)
 {
     const char * pArg = luaL_checkstring(ls, 1);
@@ -349,6 +355,7 @@ static const luaL_Reg KZSoundsBind[] = {
 //KZInput
 static const luaL_Reg KZInputBind[] = {
     {"InputState", KZInput_GetInputState},
+    {"EvilRandom", KZInputBindEvilRandom},
     {NULL, NULL}
 };
 
