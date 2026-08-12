@@ -41,7 +41,7 @@ void CKZImages::RenderImage(unsigned int img, int x_from, int y_from, int w_from
     SDL_BlitSurfaceScaled(LoadedImages.at(img), &srcrect, KZWindow.pMainSurface, &dstrect, SDL_SCALEMODE_PIXELART);
 }
 
-void CKZImages::RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_from, int h_from, int cx_to, int cy_to, double zoom, double angle)
+void CKZImages::RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_from, int h_from, int cx_to, int cy_to, double zoomx, double zoomy, double angle)
 {
     if(LoadedImages.find(img) == LoadedImages.end())
     {
@@ -50,7 +50,8 @@ void CKZImages::RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_f
     }
     SDL_Surface *srcimg = LoadedImages.at(img);
 
-    SDL_Surface *clipsurf = SDL_CreateSurface(w_from, h_from, srcimg->format);
+    //SDL3_gfx does zoom weird, lets do it separately
+    SDL_Surface *clipsurf = SDL_CreateSurface(w_from * zoomx, h_from * zoomy, srcimg->format);
 
     if(!clipsurf)
     {
@@ -58,9 +59,10 @@ void CKZImages::RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_f
     }
 
     SDL_Rect srcrect = {x_from, y_from, w_from, h_from};
-    SDL_BlitSurface(srcimg, &srcrect, clipsurf, nullptr);
+    SDL_Rect desttemprect = {0, 0, clipsurf->w, clipsurf->h};
+    SDL_BlitSurfaceScaled(srcimg, &srcrect, clipsurf, &desttemprect, SDL_SCALEMODE_PIXELART);
 
-    SDL_Surface *newimg = rotozoomSurface(clipsurf, angle, zoom, SMOOTHING_OFF);
+    SDL_Surface *newimg = rotozoomSurface(clipsurf, angle, 1, SMOOTHING_OFF);
 
     if(newimg)
     {

@@ -160,10 +160,11 @@ static int KZImagesBindRenderRotoZoom(lua_State * ls)
 
     int cx_to = (int)std::floor(luaL_checknumber(ls, 6));
     int cy_to = (int)std::floor(luaL_checknumber(ls, 7));
-    double zoom = luaL_checknumber(ls, 8);
-    double angle = luaL_checknumber(ls, 9);
+    double zoomx = luaL_checknumber(ls, 8);
+    double zoomy = luaL_checknumber(ls, 9);
+    double angle = luaL_checknumber(ls, 10);
 
-    KZImages.RenderRotoZoom(id, x_from, y_from, w_from, h_from, cx_to, cy_to, zoom, angle);
+    KZImages.RenderRotoZoom(id, x_from, y_from, w_from, h_from, cx_to, cy_to, zoomx, zoomy, angle);
     return 0;
 }
 
