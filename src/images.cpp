@@ -3,6 +3,8 @@
 #include "images.h"
 #include "window.h"
 
+#include <SDL3_rotozoom.h>
+
 CKZImages KZImages;
 
 unsigned int CKZImages::LoadImage(unsigned int img)
@@ -37,6 +39,53 @@ void CKZImages::RenderImage(unsigned int img, int x_from, int y_from, int w_from
     SDL_Rect dstrect = {x_to, y_to, w_to, h_to};
 
     SDL_BlitSurfaceScaled(LoadedImages.at(img), &srcrect, KZWindow.pMainSurface, &dstrect, SDL_SCALEMODE_PIXELART);
+}
+
+void CKZImages::RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_from, int h_from, int cx_to, int cy_to, double zoom, double angle)
+{
+    if(LoadedImages.find(img) == LoadedImages.end())
+    {
+        printf("ERROR: Cant render image %d because it is not loaded!\n", img);
+        return;
+    }
+    SDL_Surface *srcimg = LoadedImages.at(img);
+
+    SDL_Surface *clipsurf = SDL_CreateSurface(w_from, h_from, srcimg->format);
+
+    if(!clipsurf)
+    {
+        return;
+    }
+
+    SDL_Rect srcrect = {x_from, y_from, w_from, h_from};
+    SDL_BlitSurface(srcimg, &srcrect, clipsurf, nullptr);
+
+    SDL_Surface *newimg = rotozoomSurface(clipsurf, angle, zoom, SMOOTHING_OFF);
+
+    if(newimg)
+    {
+        
+        SDL_Rect dstrect = {cx_to - newimg->w / 2, cy_to - newimg->h / 2, 0, 0};
+
+        SDL_BlitSurface(newimg, nullptr, KZWindow.pMainSurface, &dstrect);
+        SDL_DestroySurface(newimg);
+    }
+    SDL_DestroySurface(clipsurf);
+}
+
+void CKZImages::KeepAreaAsImage(int x_from, int y_from, int w_from, int h_from, unsigned int destimg)
+{
+    SDL_Surface *clipsurf = SDL_CreateSurface(w_from, h_from, KZWindow.pMainSurface->format);
+    if(!clipsurf)
+    {
+        return;
+    }
+
+    SDL_Rect srcrect = {x_from, y_from, w_from, h_from};
+    SDL_BlitSurface(KZWindow.pMainSurface, &srcrect, clipsurf, nullptr);
+
+    UnloadImage(destimg);
+    LoadedImages[destimg] = clipsurf;
 }
 
 void CKZImages::UnloadAllImages()

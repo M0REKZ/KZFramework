@@ -7,3 +7,6 @@
 [submodule "lib/LuaJIT"]
 	path = lib/LuaJIT
 	url = https://github.com/WohlSoft/LuaJIT.git
+[submodule "lib/SDL3_gfx"]
+	path = lib/SDL3_gfx
+	url = https://github.com/sabdul-khabir/SDL3_gfx.git

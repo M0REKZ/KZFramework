@@ -149,6 +149,37 @@ static int KZImagesBindRenderImage(lua_State * ls)
     return 0;
 }
 
+static int KZImagesBindRenderRotoZoom(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+    
+    int x_from = (int)std::floor(luaL_optnumber(ls, 2, 0));
+    int y_from = (int)std::floor(luaL_optnumber(ls, 3, 0));
+    int w_from = (int)std::floor(luaL_optnumber(ls, 4, KZImages.GetImageWidth(id)));
+    int h_from = (int)std::floor(luaL_optnumber(ls, 5, KZImages.GetImageHeight(id)));
+
+    int cx_to = (int)std::floor(luaL_checknumber(ls, 6));
+    int cy_to = (int)std::floor(luaL_checknumber(ls, 7));
+    double zoom = luaL_checknumber(ls, 8);
+    double angle = luaL_checknumber(ls, 9);
+
+    KZImages.RenderRotoZoom(id, x_from, y_from, w_from, h_from, cx_to, cy_to, zoom, angle);
+    return 0;
+}
+
+static int KZImagesBindKeepAreaAsImage(lua_State * ls)
+{
+    int x_from = (int)std::floor(luaL_checknumber(ls, 1));
+    int y_from = (int)std::floor(luaL_checknumber(ls, 2));
+    int w_from = (int)std::floor(luaL_checknumber(ls, 3));
+    int h_from = (int)std::floor(luaL_checknumber(ls, 4));
+
+    unsigned int id = luaL_checkinteger(ls, 5);
+
+    KZImages.KeepAreaAsImage(x_from, y_from, w_from, h_from, id);
+    return 0;
+}
+
 static int KZImagesBindUnloadAllImages(lua_State * ls)
 {
     KZImages.UnloadAllImages();
@@ -332,10 +363,12 @@ static const luaL_Reg KZWindowBind[] = {
 
 //KZImages
 static const luaL_Reg KZImagesBind[] = {
+    {"RenderImage", KZImagesBindRenderImage},
+    {"RenderRotoZoom", KZImagesBindRenderRotoZoom},
+    {"KeepAreaAsImage", KZImagesBindKeepAreaAsImage},
     {"LoadImage", KZImagesBindLoadImage},
     {"UnloadImage", KZImagesBindUnloadImage},
     {"UnloadAllImages", KZImagesBindUnloadAllImages},
-    {"RenderImage", KZImagesBindRenderImage},
     {"GetImageWidth", KZWindow_GetImageWidth},
     {"GetImageHeight", KZWindow_GetImageHeight},
     {NULL, NULL}

@@ -27,7 +27,17 @@ set(SDLMIXER_VENDORED ON CACHE BOOL "" FORCE)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_mixer EXCLUDE_FROM_ALL)
 
+# add SDL3_gfx:
+### we will put SDL3::Headers in SDL3_INCLUDE_DIR to pass it into SDL3_gfx
+get_target_property(SDL3_INCLUDE_DIR SDL3::Headers INTERFACE_INCLUDE_DIRECTORIES)
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_gfx EXCLUDE_FROM_ALL)
+
+### dont build static
+set_target_properties(SDL3_gfx_Shared PROPERTIES EXCLUDE_FROM_ALL TRUE)
+set(SDL3_GFX_LIB SDL3_gfx_Static)
+
+# add LuaJIT
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/LuaJIT EXCLUDE_FROM_ALL)
 
 set(KZFRAMEWORK_SRC_FILES
@@ -50,6 +60,7 @@ add_executable(${EXECUTABLE_NAME} ${KZFRAMEWORK_SRC_FILES})
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    SDL3_gfx::Headers
 )
 
 # we should not need to include standard libraries as .dll/.so
@@ -63,5 +74,6 @@ endif()
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3::SDL3
     SDL3_mixer::SDL3_mixer
+    ${SDL3_GFX_LIB}
     libluajit
 )
