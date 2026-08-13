@@ -28,6 +28,11 @@ unsigned int CKZImages::LoadImage(unsigned int img)
     return 0;
 }
 
+bool CKZImages::IsImageSlotBusy(unsigned int img)
+{
+    return LoadedImages.find(img) != LoadedImages.end();
+}
+
 void CKZImages::RenderImage(unsigned int img, int x_from, int y_from, int w_from, int h_from, int x_to, int y_to, int w_to, int h_to)
 {
     if(LoadedImages.find(img) == LoadedImages.end())
@@ -51,7 +56,7 @@ void CKZImages::RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_f
     SDL_Surface *srcimg = LoadedImages.at(img);
 
     //SDL3_gfx does zoom weird, lets do it separately
-    SDL_Surface *clipsurf = SDL_CreateSurface(w_from * zoomx, h_from * zoomy, srcimg->format);
+    SDL_Surface *clipsurf = SDL_CreateSurface(w_from * std::abs(zoomx), h_from * std::abs(zoomy), srcimg->format);
 
     if(!clipsurf)
     {
@@ -62,7 +67,7 @@ void CKZImages::RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_f
     SDL_Rect desttemprect = {0, 0, clipsurf->w, clipsurf->h};
     SDL_BlitSurfaceScaled(srcimg, &srcrect, clipsurf, &desttemprect, SDL_SCALEMODE_PIXELART);
 
-    SDL_Surface *newimg = rotozoomSurface(clipsurf, angle, 1, SMOOTHING_OFF);
+    SDL_Surface *newimg = rotozoomSurfaceXY(clipsurf, angle, zoomx > 0 ? 1 : -1, zoomy > 0 ? 1 : -1, SMOOTHING_OFF);
 
     if(newimg)
     {

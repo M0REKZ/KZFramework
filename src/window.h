@@ -21,6 +21,8 @@ public:
     const int Width = 256 * 2;
     const int Height = 244 * 2;
 
+    unsigned int TargetDelay = 16; // 60 FPS default
+
     bool Init();
     void Destroy();
 
@@ -29,6 +31,7 @@ public:
     //Window
 
     bool ChangeWindowTitle(const char * pnewtitle);
+    void SetTargetDelay(unsigned int delay) { TargetDelay = delay; }
 
     //Drawing
 

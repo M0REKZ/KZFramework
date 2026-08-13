@@ -115,6 +115,12 @@ static int KZWindow_GetHeight(lua_State * ls)
     return 1;
 }
 
+static int KZWindow_SetTargetDelay(lua_State * ls)
+{
+    KZWindow.SetTargetDelay(luaL_checkinteger(ls, 1));
+    return 0;
+}
+
 static int KZImagesBindLoadImage(lua_State * ls)
 {
     unsigned int id = luaL_checkinteger(ls, 1);
@@ -185,6 +191,14 @@ static int KZImagesBindUnloadAllImages(lua_State * ls)
 {
     KZImages.UnloadAllImages();
     return 0;
+}
+
+static int KZImagesBindIsImageSlotBusy(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    lua_pushboolean(ls, KZImages.IsImageSlotBusy(id));
+    return 1;
 }
 
 static int KZWindow_GetImageWidth(lua_State * ls)
@@ -359,6 +373,7 @@ static const luaL_Reg KZWindowBind[] = {
     {"GetWidth", KZWindow_GetWidth},
     {"GetHeight", KZWindow_GetHeight},
     {"ChangeWindowTitle", KZWindowBindChangeWindowTitle},
+    {"SetTargetDelay", KZWindow_SetTargetDelay},
     {NULL, NULL}
 };
 
@@ -367,6 +382,7 @@ static const luaL_Reg KZImagesBind[] = {
     {"RenderImage", KZImagesBindRenderImage},
     {"RenderRotoZoom", KZImagesBindRenderRotoZoom},
     {"KeepAreaAsImage", KZImagesBindKeepAreaAsImage},
+    {"IsImageSlotBusy", KZImagesBindIsImageSlotBusy},
     {"LoadImage", KZImagesBindLoadImage},
     {"UnloadImage", KZImagesBindUnloadImage},
     {"UnloadAllImages", KZImagesBindUnloadAllImages},
@@ -414,7 +430,7 @@ bool CKZScripts::Init()
         //push needed functions
         luaL_register(MainLuaState, "KZWindow", KZWindowBind);
         luaL_register(MainLuaState, "KZImages", KZImagesBind);
-        luaL_register(MainLuaState, "KZSounds", KZImagesBind);
+        luaL_register(MainLuaState, "KZSounds", KZSoundsBind);
         luaL_register(MainLuaState, "KZInput", KZInputBind);
         luaL_register(MainLuaState, "KZFiles", KZFilesBind);
     }

@@ -11,6 +11,7 @@ class CKZImages
     public:
 
     unsigned int LoadImage(unsigned int img);
+    bool IsImageSlotBusy(unsigned int img);
     void RenderImage(unsigned int img, int x_from, int y_from, int w_from, int h_from, int x_to, int y_to, int w_to, int h_to);
     void RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_from, int h_from, int cx_to, int cy_to, double zoomx, double zoomy, double angle);
     void KeepAreaAsImage(int x_from, int y_from, int w_from, int h_from, unsigned int destimg);
