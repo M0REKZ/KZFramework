@@ -61,10 +61,7 @@ unsigned int CKZSounds::LoadAudio(unsigned int snd, bool predecode)
     MIX_Audio * pSnd = MIX_LoadAudio(pMainMixer, filename.c_str(), predecode);
 
     if(pSnd)
-    {
-        LoadedSounds[snd] = pSnd;
-        return snd;
-    }
+        goto onsuccess;
 
     //try wav
     filename = "game/data/audios/" + std::to_string(snd) + ".wav";
@@ -72,18 +69,26 @@ unsigned int CKZSounds::LoadAudio(unsigned int snd, bool predecode)
     pSnd = MIX_LoadAudio(pMainMixer, filename.c_str(), predecode);
 
     if(pSnd)
-    {
-        LoadedSounds[snd] = pSnd;
-        return snd;
-    }
+        goto onsuccess;
 
     printf("ERROR: Could not load audio %d %s!\n", snd, filename.c_str());
 
     //0 on error
     return 0;
+
+    onsuccess:
+    {
+        LoadedSounds[snd] = pSnd;
+        return snd;
+    }
 }
 
-bool CKZSounds::PlayAudio(unsigned int snd, bool loop)
+bool CKZSounds::IsSoundSlotBusy(unsigned int snd)
+{
+    return LoadedSounds.find(snd) != LoadedSounds.end();
+}
+
+bool CKZSounds::PlayAudio(unsigned int snd, bool loop, float volume)
 {
     if(LoadedSounds.find(snd) == LoadedSounds.end())
     {
@@ -137,11 +142,13 @@ bool CKZSounds::PlayAudio(unsigned int snd, bool loop)
         return false;
     }
 
-    SDL_PropertiesID props = SDL_CreateProperties();    \
+    SDL_PropertiesID props = SDL_CreateProperties();
     SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, loop ? -1 : 0);
+    MIX_SetTrackGain(PlayingSounds[bestchannel].pTrack, volume);
     MIX_PlayTrack(PlayingSounds[bestchannel].pTrack, props);
     PlayingSounds[bestchannel].SoundID = snd;
     PlayingSounds[bestchannel].StartTime = currenttime;
+    PlayingSounds[bestchannel].Volume = volume;
 
     return true;
 }

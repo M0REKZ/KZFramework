@@ -242,12 +242,21 @@ static int KZSoundsBindLoadSoundEffect(lua_State * ls)
     return 1;
 }
 
+static int KZSoundsBindIsSoundSlotBusy(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    lua_pushboolean(ls, KZSounds.IsSoundSlotBusy(id));
+    return 1;
+}
+
 static int KZSoundsBindPlayAudio(lua_State * ls)
 {
     unsigned int id = luaL_checkinteger(ls, 1);
     bool loop = lua_toboolean(ls, 2);
+    float vol = luaL_optnumber(ls, 3, 1.f);
 
-    lua_pushboolean(ls, KZSounds.PlayAudio(id, loop));
+    lua_pushboolean(ls, KZSounds.PlayAudio(id, loop, vol));
     return 1;
 }
 
@@ -396,6 +405,7 @@ static const luaL_Reg KZSoundsBind[] = {
     {"LoadAudio", KZSoundsBindLoadAudio},
     {"LoadMusic", KZSoundsBindLoadMusic},
     {"LoadSoundEffect", KZSoundsBindLoadSoundEffect},
+    {"IsSoundSlotBusy", KZSoundsBindIsSoundSlotBusy},
     {"PlayAudio", KZSoundsBindPlayAudio},
     {"UnloadAllSounds", KZSoundsBindUnloadAllSounds},
     {"UnloadSound", KZSoundsBindUnloadSound},

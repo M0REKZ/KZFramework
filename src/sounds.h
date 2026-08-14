@@ -19,6 +19,7 @@ private:
         MIX_Track * pTrack = nullptr;
         unsigned int SoundID = 0;
         Uint64 StartTime = 0;
+        float Volume = 0.f;
 
         void Reset();
         bool IsPlaying() { return pTrack && MIX_TrackPlaying(pTrack); }
@@ -37,7 +38,8 @@ public:
     unsigned int LoadAudio(unsigned int snd, bool predecode);
     unsigned int LoadMusic(unsigned int snd) { return LoadAudio(snd, false); }
     unsigned int LoadSoundEffect(unsigned int snd) { return LoadAudio(snd, true); }
-    bool PlayAudio(unsigned int snd, bool loop);
+    bool IsSoundSlotBusy(unsigned int snd);
+    bool PlayAudio(unsigned int snd, bool loop, float volume);
     void UnloadAllSounds();
     void UnloadSound(unsigned int snd);
 };
