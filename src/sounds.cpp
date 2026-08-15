@@ -92,7 +92,7 @@ bool CKZSounds::PlayAudio(unsigned int snd, bool loop, float volume)
 {
     if(LoadedSounds.find(snd) == LoadedSounds.end())
     {
-        printf("ERROR: Audio %d is not loaded!", snd);
+        printf("ERROR: Audio %d is not loaded!\n", snd);
         return false;
     }
 

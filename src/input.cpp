@@ -76,6 +76,12 @@ void CKZInput::HandleInput(SDL_Event e)
             QueuedInput.Run = e.key.down;
             break;
         
+        case SDLK_A:
+            if(e.type == SDL_EVENT_KEY_DOWN)
+                InputState.AltJump = true;
+            QueuedInput.AltJump = e.key.down;
+            break;
+        
         default:
             break;
         }
