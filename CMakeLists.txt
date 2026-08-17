@@ -37,6 +37,11 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_gfx EXCLUDE_FROM_ALL)
 set_target_properties(SDL3_gfx_Shared PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(SDL3_GFX_LIB SDL3_gfx_Static)
 
+# add SDL3_ttf:
+### need ttf libs
+set(SDLTTF_VENDORED ON)
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_ttf EXCLUDE_FROM_ALL)
+
 # add LuaJIT
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/LuaJIT EXCLUDE_FROM_ALL)
 
@@ -51,6 +56,8 @@ set(KZFRAMEWORK_SRC_FILES
     src/scripts.h
     src/sounds.cpp
     src/sounds.h
+    src/text.cpp
+    src/text.h
     src/window.cpp
     src/window.h
     src/main.cpp
@@ -75,5 +82,6 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3::SDL3
     SDL3_mixer::SDL3_mixer
     ${SDL3_GFX_LIB}
+    SDL3_ttf::SDL3_ttf
     libluajit
 )

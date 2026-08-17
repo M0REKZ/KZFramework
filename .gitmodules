@@ -10,3 +10,6 @@
 [submodule "lib/SDL3_gfx"]
 	path = lib/SDL3_gfx
 	url = https://github.com/sabdul-khabir/SDL3_gfx.git
+[submodule "lib/SDL3_ttf"]
+	path = lib/SDL3_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git

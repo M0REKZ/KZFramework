@@ -29,6 +29,9 @@ public:
         float MouseY;
         Uint8 MouseClick;
         Uint8 MouseRightClick;
+
+        Uint8 Enter;
+        Uint8 Pause;
     };
     
     SState InputState;

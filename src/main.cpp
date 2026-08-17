@@ -8,14 +8,16 @@
 #include "scripts.h"
 #include "input.h"
 #include "files.h"
+#include "text.h"
 
 bool init_everything()
 {
-    return KZWindow.Init() && KZSounds.Init() && KZFiles.Init() && KZScripts.Init();
+    return KZWindow.Init() && KZSounds.Init() && KZFiles.Init() && KZText.Init() && KZScripts.Init();
 }
 
 void destroy_everything()
 {
+    KZText.Destroy();
     KZSounds.Destroy();
     KZImages.UnloadAllImages();
     KZWindow.Destroy();

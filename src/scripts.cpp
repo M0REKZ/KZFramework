@@ -12,6 +12,7 @@ extern "C"
 #include "sounds.h"
 #include "input.h"
 #include "files.h"
+#include "text.h"
 
 lua_State * CKZScripts::MainLuaState = nullptr;
 
@@ -314,6 +315,12 @@ static int KZInput_GetInputState(lua_State * ls)
     lua_pushboolean(ls, KZInput.InputState.MouseRightClick);
     lua_setfield(ls, -2, "MouseRightClick");
 
+    lua_pushboolean(ls, KZInput.InputState.Enter);
+    lua_setfield(ls, -2, "Enter");
+
+    lua_pushboolean(ls, KZInput.InputState.Pause);
+    lua_setfield(ls, -2, "Pause");
+
     return 1;
 }
 
@@ -367,6 +374,68 @@ static int KZFilesBindGetNextLine(lua_State * ls)
 static int KZFilesBindCloseFile(lua_State * ls)
 {
     KZFiles.CloseFile();
+    return 0;
+}
+
+static int KZTextBindLoadText(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    if(pArg)
+    {
+        lua_pushboolean(ls, KZText.LoadText(pArg));
+        return 1;
+    }
+    return 0;
+}
+
+static int KZTextBindClearCache(lua_State * ls)
+{
+    KZText.ClearCache();
+    return 0;
+}
+
+static int KZTextBindAddCharacter(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    if(pArg)
+    {
+        lua_pushboolean(ls, KZText.AddCharacter(pArg[0]));
+        return 1;
+    }
+    return 0;
+}
+
+static int KZTextBindSetCurrentColor(lua_State * ls)
+{
+    Uint8 r = luaL_checkinteger(ls, 1);
+    Uint8 g = luaL_checkinteger(ls, 2);
+    Uint8 b = luaL_checkinteger(ls, 3);
+    Uint8 a = luaL_checkinteger(ls, 4);
+
+    KZText.SetCurrentColor(r, g, b, a);
+    return 0;
+}
+
+static int KZTextBindRenderText(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    int x = (int)std::floor(luaL_checknumber(ls, 2));
+    int y = (int)std::floor(luaL_checknumber(ls, 3));
+
+    KZText.RenderText(pArg, x, y);
+    return 0;
+}
+
+static int KZTextBindInitText(lua_State * ls)
+{
+    lua_pushboolean(ls, KZText.InitText());
+    return 1;
+}
+
+static int KZTextBindSetOutline(lua_State * ls)
+{
+    bool r = lua_toboolean(ls, 1);
+    KZText.SetOutline(r);
     return 0;
 }
 
@@ -429,6 +498,18 @@ static const luaL_Reg KZFilesBind[] = {
     {NULL, NULL}
 };
 
+//KZText
+static const luaL_Reg KZTextBind[] = {
+    {"LoadText", KZTextBindLoadText},
+    {"ClearCache", KZTextBindClearCache},
+    {"AddCharacter", KZTextBindAddCharacter},
+    {"SetCurrentColor", KZTextBindSetCurrentColor},
+    {"RenderText", KZTextBindRenderText},
+    {"InitText", KZTextBindInitText},
+    {"SetOutline", KZTextBindSetOutline},
+    {NULL, NULL}
+};
+
 
 bool CKZScripts::Init()
 {
@@ -443,6 +524,7 @@ bool CKZScripts::Init()
         luaL_register(MainLuaState, "KZSounds", KZSoundsBind);
         luaL_register(MainLuaState, "KZInput", KZInputBind);
         luaL_register(MainLuaState, "KZFiles", KZFilesBind);
+        luaL_register(MainLuaState, "KZText", KZTextBind);
     }
     return MainLuaState != nullptr;
 }
