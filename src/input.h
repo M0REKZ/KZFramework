@@ -14,6 +14,9 @@ public:
     void HandleInput(SDL_Event e);
     void UpdateInput();
 
+    //Allows receiving chars from keyboard
+    void SetTextInputMode(bool mode);
+
     struct SState
     {
         Uint8 Up;
@@ -31,10 +34,14 @@ public:
         Uint8 MouseRightClick;
 
         Uint8 Enter;
+        Uint8 BackSpace;
         Uint8 Pause;
+        Uint8 Shift;
+        char LastTextInput[128] = {'\0'};
     };
     
     SState InputState;
+    SState PreviousInputState;
 
     // probably the worst way of making """""random"""""
     Uint64 EvilRandom();

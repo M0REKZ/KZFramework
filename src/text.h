@@ -8,6 +8,7 @@ class CKZText
 {
     //for now im just using C++ char
     std::unordered_map<char, SDL_Surface *> TextCharCache;
+    std::unordered_map<char, SDL_Surface *> TextCharOutlineCache;
     TTF_Font * LoadedText = nullptr;
     SDL_Color CurrentColor = {0,0,0,0};
     bool Outline = false;

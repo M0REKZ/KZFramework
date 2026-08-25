@@ -1,4 +1,5 @@
 #include "input.h"
+#include "window.h"
 
 CKZInput KZInput;
 
@@ -31,69 +32,87 @@ void CKZInput::HandleInput(SDL_Event e)
         }
         break;
     
-    case SDL_EVENT_MOUSE_MOTION:
+    /*case SDL_EVENT_MOUSE_MOTION:
         InputState.MouseX = QueuedInput.MouseX = e.motion.x;
         InputState.MouseY = QueuedInput.MouseY = e.motion.y;
+        break;*/
+
+    case SDL_EVENT_TEXT_INPUT:
+        snprintf(InputState.LastTextInput, sizeof(InputState.LastTextInput), "%s", e.text.text);
+        snprintf(QueuedInput.LastTextInput, sizeof(QueuedInput.LastTextInput), "%s", e.text.text);
         break;
 
     case SDL_EVENT_KEY_DOWN:
     case SDL_EVENT_KEY_UP:
-        switch (e.key.key)
+        switch (e.key.scancode)
         {
-        case SDLK_UP:
+        case SDL_SCANCODE_UP:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.Up = true;
             QueuedInput.Up = e.key.down;
             break;
 
-        case SDLK_DOWN:
+        case SDL_SCANCODE_DOWN:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.Down = true;
             QueuedInput.Down = e.key.down;
             break;
 
-        case SDLK_LEFT:
+        case SDL_SCANCODE_LEFT:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.Left = true;
             QueuedInput.Left = e.key.down;
             break;
 
-        case SDLK_RIGHT:
+        case SDL_SCANCODE_RIGHT:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.Right = true;
             QueuedInput.Right = e.key.down;
             break;
 
-        case SDLK_Z:
+        case SDL_SCANCODE_Z:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.Jump = true;
             QueuedInput.Jump = e.key.down;
             break;
 
-        case SDLK_S:
+        case SDL_SCANCODE_S:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.Run = true;
             QueuedInput.Run = e.key.down;
             break;
         
-        case SDLK_A:
+        case SDL_SCANCODE_A:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.AltJump = true;
             QueuedInput.AltJump = e.key.down;
             break;
 
-        case SDLK_RETURN:
+        case SDL_SCANCODE_RETURN:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.Enter = true;
             QueuedInput.Enter = e.key.down;
             break;
 
-        case SDLK_ESCAPE:
+        case SDL_SCANCODE_ESCAPE:
             if(e.type == SDL_EVENT_KEY_DOWN)
                 InputState.Pause = true;
             QueuedInput.Pause = e.key.down;
             break;
-        
+
+        case SDL_SCANCODE_BACKSPACE:
+            if(e.type == SDL_EVENT_KEY_DOWN)
+                InputState.BackSpace = true;
+            QueuedInput.BackSpace = e.key.down;
+            break;
+
+        case SDL_SCANCODE_LSHIFT:
+        case SDL_SCANCODE_RSHIFT:
+            if(e.type == SDL_EVENT_KEY_DOWN)
+                InputState.Shift = true;
+            QueuedInput.Shift = e.key.down;
+            break;
+
         default:
             break;
         }
@@ -102,11 +121,69 @@ void CKZInput::HandleInput(SDL_Event e)
     default:
         break;
     }
+
+    float mouseX, mouseY;
+    SDL_GetGlobalMouseState(&mouseX, &mouseY);
+
+    int windowX, windowY;
+    SDL_GetWindowPosition(KZWindow.pMainWindow, &windowX, &windowY);
+
+    int w, h;
+    SDL_GetWindowSizeInPixels(KZWindow.pMainWindow, &w, &h);
+
+    float scaleX = (float)w / KZWindow.Width;
+    float scaleY = (float)h / KZWindow.Height;
+    float scale  = (scaleX < scaleY) ? scaleX : scaleY;
+
+    float destW = KZWindow.Width * scale;
+    float destH = KZWindow.Height * scale;
+
+    float destX = (w - destW) / 2.0f;
+    float destY = (h - destH) / 2.0f;
+
+    // Mouse position relative to the window
+    float localMouseX = mouseX - windowX;
+    float localMouseY = mouseY - windowY;
+
+    // Is the mouse inside the actual rendered game area?
+    if (localMouseX >= destX &&
+        localMouseX <  destX + destW &&
+        localMouseY >= destY &&
+        localMouseY <  destY + destH)
+    {
+        // Convert from scaled window coordinates
+        // back to game coordinates.
+        float gameMouseX = (localMouseX - destX) / scale;
+        float gameMouseY = (localMouseY - destY) / scale;
+
+        InputState.MouseX = QueuedInput.MouseX = gameMouseX;
+        InputState.MouseY = QueuedInput.MouseY = gameMouseY;
+    }
+    else
+    {
+        // Ignore clicks outside the game area
+        InputState.MouseClick = QueuedInput.MouseClick = false;
+        InputState.MouseRightClick = QueuedInput.MouseRightClick = false;
+    }
 }
 
 void CKZInput::UpdateInput()
 {
+    memcpy(&PreviousInputState, &InputState, sizeof(PreviousInputState));
     memcpy(&InputState, &QueuedInput, sizeof(InputState));
+    InputState.LastTextInput[0] = QueuedInput.LastTextInput[0] = '\0';
+}
+
+void CKZInput::SetTextInputMode(bool mode)
+{
+    if(mode)
+    {
+        SDL_StartTextInput(KZWindow.pMainWindow);
+    }
+    else if(SDL_TextInputActive(KZWindow.pMainWindow))
+    {
+        SDL_StopTextInput(KZWindow.pMainWindow);
+    }
 }
 
 Uint64 CKZInput::EvilRandom()

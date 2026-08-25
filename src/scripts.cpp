@@ -277,49 +277,65 @@ static int KZSoundsBindUnloadAllSounds(lua_State * ls)
 
 static int KZInput_GetInputState(lua_State * ls)
 {
+    CKZInput::SState * pInputState = &KZInput.InputState;
+    const char * pArg = luaL_optstring(ls, 1, nullptr);
+    if(pArg && pArg[0] == 'p')
+    {
+        pInputState = &KZInput.PreviousInputState;
+    }
+
     lua_newtable(ls);
 
-    lua_pushboolean(ls, KZInput.InputState.Up);
+    lua_pushboolean(ls, pInputState->Up);
     lua_setfield(ls, -2, "Up");
 
-    lua_pushboolean(ls, KZInput.InputState.Down);
+    lua_pushboolean(ls, pInputState->Down);
     lua_setfield(ls, -2, "Down");
 
-    lua_pushboolean(ls, KZInput.InputState.Left);
+    lua_pushboolean(ls, pInputState->Left);
     lua_setfield(ls, -2, "Left");
 
-    lua_pushboolean(ls, KZInput.InputState.Right);
+    lua_pushboolean(ls, pInputState->Right);
     lua_setfield(ls, -2, "Right");
 
-    lua_pushboolean(ls, KZInput.InputState.Jump);
+    lua_pushboolean(ls, pInputState->Jump);
     lua_setfield(ls, -2, "Jump");
 
-    lua_pushboolean(ls, KZInput.InputState.AltJump);
+    lua_pushboolean(ls, pInputState->AltJump);
     lua_setfield(ls, -2, "AltJump");
 
-    lua_pushboolean(ls, KZInput.InputState.Run);
+    lua_pushboolean(ls, pInputState->Run);
     lua_setfield(ls, -2, "Run");
 
-    lua_pushboolean(ls, KZInput.InputState.AltRun);
+    lua_pushboolean(ls, pInputState->AltRun);
     lua_setfield(ls, -2, "AltRun");
 
-    lua_pushnumber(ls, KZInput.InputState.MouseX);
+    lua_pushnumber(ls, pInputState->MouseX);
     lua_setfield(ls, -2, "MouseX");
 
-    lua_pushnumber(ls, KZInput.InputState.MouseY);
+    lua_pushnumber(ls, pInputState->MouseY);
     lua_setfield(ls, -2, "MouseY");
 
-    lua_pushboolean(ls, KZInput.InputState.MouseClick);
+    lua_pushboolean(ls, pInputState->MouseClick);
     lua_setfield(ls, -2, "MouseClick");
 
-    lua_pushboolean(ls, KZInput.InputState.MouseRightClick);
+    lua_pushboolean(ls, pInputState->MouseRightClick);
     lua_setfield(ls, -2, "MouseRightClick");
 
-    lua_pushboolean(ls, KZInput.InputState.Enter);
+    lua_pushboolean(ls, pInputState->Enter);
     lua_setfield(ls, -2, "Enter");
 
-    lua_pushboolean(ls, KZInput.InputState.Pause);
+    lua_pushboolean(ls, pInputState->Pause);
     lua_setfield(ls, -2, "Pause");
+
+    lua_pushboolean(ls, pInputState->Shift);
+    lua_setfield(ls, -2, "Shift");
+
+    lua_pushboolean(ls, pInputState->BackSpace);
+    lua_setfield(ls, -2, "BackSpace");
+
+    lua_pushstring(ls, pInputState->LastTextInput);
+    lua_setfield(ls, -2, "LastTextInput");
 
     return 1;
 }
@@ -328,6 +344,12 @@ static int KZInputBindEvilRandom(lua_State * ls)
 {
     lua_pushinteger(ls, KZInput.EvilRandom());
     return 1;
+}
+
+static int KZInputBindSetTextInputMode(lua_State * ls)
+{
+    KZInput.SetTextInputMode(lua_toboolean(ls, 1));
+    return 0;
 }
 
 static int KZFilesBindOpenFileForWriting(lua_State * ls)
@@ -485,6 +507,7 @@ static const luaL_Reg KZSoundsBind[] = {
 static const luaL_Reg KZInputBind[] = {
     {"InputState", KZInput_GetInputState},
     {"EvilRandom", KZInputBindEvilRandom},
+    {"SetTextInputMode", KZInputBindSetTextInputMode},
     {NULL, NULL}
 };
 
