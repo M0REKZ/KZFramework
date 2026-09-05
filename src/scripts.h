@@ -8,8 +8,11 @@ extern "C"
     #include <lauxlib.h>
 }
 
+#include <iostream>
+
 class CKZScripts
 {
+    int MainLuaFunc = LUA_NOREF;
 public:
     static lua_State * MainLuaState;
 
@@ -29,6 +32,38 @@ public:
             return false;
         }
 
+        return true;
+    }
+
+    inline bool RunMain()
+    {
+        if(MainLuaFunc == LUA_NOREF || MainLuaFunc == LUA_REFNIL)
+        {
+            lua_getglobal(MainLuaState, "KZMain");
+
+            if(lua_isfunction(MainLuaState, -1))
+            {
+                MainLuaFunc = luaL_ref(MainLuaState, LUA_REGISTRYINDEX);
+            }
+        }
+
+        if(MainLuaFunc != LUA_NOREF && MainLuaFunc != LUA_REFNIL)
+        {
+            lua_rawgeti(MainLuaState, LUA_REGISTRYINDEX, MainLuaFunc);
+
+            if (lua_pcall(MainLuaState, 0, 0, 0) != LUA_OK)
+            {
+                std::cout << "ERROR LUAJIT: " << lua_tostring(MainLuaState, -1) << '\n';
+                lua_pop(MainLuaState, 1);
+                return false;
+            }
+        }
+        else
+        {
+            std::cout << "ERROR LUAJIT: No Main Function" << std::endl;
+            lua_pop(MainLuaState, 1);
+            return false;
+        }
         return true;
     }
 };
