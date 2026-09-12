@@ -2,6 +2,8 @@
 
 +KZ Framework (or KZFramework) by +KZ (i mean... it is in the name...)
 
-For games like +KAIZO (also known as PLUSKAIZO)
+Also probably the worst framework ever made
+
+Made for games like +KAIZO (also known as PLUSKAIZO)
 
 Dont use or read this code without my explicit permission
