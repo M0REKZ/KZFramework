@@ -7,6 +7,12 @@ CKZWindow KZWindow;
 
 bool CKZWindow::Init()
 {
+    if(!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS))
+    {
+        printf("ERROR INIT SDL: %s\n", SDL_GetError());
+        return false;
+    }
+
     pMainWindow = SDL_CreateWindow("+KZ Framework Game", Width, Height, SDL_WINDOW_RESIZABLE);
     if(!pMainWindow)
     {
@@ -49,6 +55,7 @@ void CKZWindow::Destroy()
         SDL_DestroyRenderer(pMainWindowRenderer);
     if(pMainWindow)
         SDL_DestroyWindow(pMainWindow);
+    SDL_Quit();
 }
 
 void CKZWindow::UpdateWindow()
