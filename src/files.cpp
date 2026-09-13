@@ -21,10 +21,7 @@ bool CKZFiles::Init()
 
 bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
 {
-    if(CurrentFile)
-    {
-        CurrentFile.close();
-    }
+    CloseFile();
 
     std::string psavespath = std::string(SavesPath) + ppath;
 
@@ -32,6 +29,11 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
 
     if(CurrentFile.is_open())
     {
+        if(CurrentFile.bad())
+        {
+            CloseFile();
+            return false;
+        }
         CurrentFileState = bin ? EFileState::OPEN_READ_BIN : EFileState::OPEN_READ;
         return true;
     }
@@ -41,10 +43,7 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
 
 bool CKZFiles::OpenFileForWriting(const char *ppath, bool bin)
 {
-    if(CurrentFile)
-    {
-        CurrentFile.close();
-    }
+    CloseFile();
 
     std::string psavespath = std::string(SavesPath) + ppath;
 
@@ -52,6 +51,11 @@ bool CKZFiles::OpenFileForWriting(const char *ppath, bool bin)
 
     if(CurrentFile.is_open())
     {
+        if(CurrentFile.bad())
+        {
+            CloseFile();
+            return false;
+        }
         CurrentFileState = bin ? EFileState::OPEN_WRITE_BIN : EFileState::OPEN_WRITE;
         return true;
     }
@@ -61,7 +65,7 @@ bool CKZFiles::OpenFileForWriting(const char *ppath, bool bin)
 
 void CKZFiles::CloseFile()
 {
-    if(CurrentFile)
+    if(CurrentFile.is_open())
     {
         CurrentFile.close();
     }
@@ -96,10 +100,23 @@ const char *CKZFiles::GetNextLine()
 
 bool CKZFiles::WriteLine(std::string line)
 {
-    if(CurrentFileState == EFileState::OPEN_WRITE && CurrentFile)
+    if(!CurrentFile.is_open())
+    {
+        printf("file is not open\n");
+        return false;
+    }
+
+    if(!CurrentFile.good())
+    {
+        printf("file stream is broken\n");
+        return false;
+    }
+
+    if(CurrentFileState == EFileState::OPEN_WRITE)
     {
         CurrentFile << line << '\n';
-        return (bool)CurrentFile;
+        return !CurrentFile.fail();
     }
+    printf("write failed\n");
     return false;
 }
