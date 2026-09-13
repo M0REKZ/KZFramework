@@ -7,7 +7,7 @@
 class CKZFiles
 {
     char SavesPath[512] = {'\0'};
-    char FileReadBuffer[1024] = {'\0'};
+    std::string FileReadBuffer;
 
     std::fstream CurrentFile;
 

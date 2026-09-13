@@ -71,10 +71,25 @@ void CKZFiles::CloseFile()
 
 const char *CKZFiles::GetNextLine()
 {
-    if(CurrentFileState == EFileState::OPEN_READ && CurrentFile)
+    if(CurrentFileState == EFileState::OPEN_READ && CurrentFile.good())
     {
-        CurrentFile.getline(FileReadBuffer, sizeof(FileReadBuffer));
-        return FileReadBuffer;
+        if(CurrentFile.eof())
+        {
+            return nullptr;
+        }
+
+        std::getline(CurrentFile, FileReadBuffer);
+
+        if(CurrentFile.rdstate() & std::ios::badbit)
+        {
+            return nullptr;
+        }
+
+        if(!CurrentFile.eof() && CurrentFile.rdstate() & std::ios::failbit)
+        {
+            CurrentFile.clear();
+        }
+        return FileReadBuffer.c_str();
     }
     return nullptr;
 }
