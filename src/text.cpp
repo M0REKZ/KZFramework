@@ -205,11 +205,11 @@ void CKZText::RenderText(std::string epictexttorender, int x, int y)
         {
             if(Outline)
             {
-                pCh = TextCharCache.at(ch);
+                pCh = TextCharOutlineCache.at(ch);
             }
             else
             {
-                pCh = TextCharOutlineCache.at(ch);
+                pCh = TextCharCache.at(ch);
             }
         }
         catch(const std::exception& e)
