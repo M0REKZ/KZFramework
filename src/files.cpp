@@ -1,22 +1,13 @@
 
 #include <SDL3/SDL.h>
+#include "globals.h"
 #include "files.h"
 
 CKZFiles KZFiles;
 
 bool CKZFiles::Init()
 {
-    char * ppath = SDL_GetPrefPath("m0rekz.github.io","PLUSKAIZO");
-
-    if(ppath)
-    {
-        strncpy(SavesPath, ppath, sizeof(SavesPath));
-        SDL_free(ppath);
-        return true;
-    }
-
-    printf("ERROR INIT SDL SAVE PATH: %s\n", SDL_GetError());
-    return false;
+    return ResetSavePath();
 }
 
 bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
@@ -118,5 +109,20 @@ bool CKZFiles::WriteLine(std::string line)
         return !CurrentFile.fail();
     }
     printf("write failed\n");
+    return false;
+}
+
+bool CKZFiles::ResetSavePath()
+{
+    char * ppath = SDL_GetPrefPath(KZGlobals.GetGameOrg(), KZGlobals.GetGameName());
+
+    if(ppath)
+    {
+        strncpy(SavesPath, ppath, sizeof(SavesPath));
+        SDL_free(ppath);
+        return true;
+    }
+
+    printf("ERROR INIT SDL SAVE PATH: %s\n", SDL_GetError());
     return false;
 }

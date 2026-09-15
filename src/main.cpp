@@ -9,6 +9,7 @@
 #include "input.h"
 #include "files.h"
 #include "text.h"
+#include "globals.h"
 
 bool init_everything()
 {
@@ -26,42 +27,45 @@ void destroy_everything()
 
 int main(int argc, char ** args)
 {
-    if(!init_everything())
+    int ret = 0;
+    if(init_everything())
+    {
+        SDL_Event e;
+        bool running = true;
+        KZImages.LoadImage(0);
+
+        if(KZScripts.RunScript("game/main.lua"))
+        {
+            KZGlobals.Lock();
+
+            while(running)
+            {
+                KZInput.UpdateInput();
+                while(SDL_PollEvent(&e))
+                {
+                    if(e.type == SDL_EVENT_QUIT)
+                    {
+                        running = false;
+                    }
+                    KZInput.HandleInput(e);
+                }
+
+                if(!KZScripts.RunMain())
+                    break;
+
+                KZWindow.UpdateWindow();
+
+                KZWindow.Delay(16);
+            }
+        }
+    }
+    else
     {
         printf("ERROR: Could not init SDL!!!\n");
-        return -1;
+        ret = -1;
     }
-
-    SDL_Event e;
-    bool running = true;
-    KZImages.LoadImage(0);
-
-    if(!KZScripts.RunScript("game/main.lua"))
-    {
-        goto epic_quit;
-    }
-
-    while(running)
-    {
-        KZInput.UpdateInput();
-        while(SDL_PollEvent(&e))
-        {
-            if(e.type == SDL_EVENT_QUIT)
-            {
-                running = false;
-            }
-            KZInput.HandleInput(e);
-        }
-
-        if(!KZScripts.RunMain())
-            break;
-
-        KZWindow.UpdateWindow();
-
-        KZWindow.Delay(16);
-    }
-
-    epic_quit:
 
     destroy_everything();
+
+    return ret;
 }

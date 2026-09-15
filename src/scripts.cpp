@@ -13,6 +13,7 @@ extern "C"
 #include "input.h"
 #include "files.h"
 #include "text.h"
+#include "globals.h"
 
 lua_State * CKZScripts::MainLuaState = nullptr;
 
@@ -461,6 +462,20 @@ static int KZTextBindSetOutline(lua_State * ls)
     return 0;
 }
 
+static int KZGlobalsBindSetGameName(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    KZGlobals.SetGameName(pArg);
+    return 0;
+}
+
+static int KZGlobalsBindSetGameOrg(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    KZGlobals.SetGameOrg(pArg);
+    return 0;
+}
+
 //KZWindow
 static const luaL_Reg KZWindowBind[] = {
     {"ConvertToWindowDrawColor", KZWindowBindConverToWindowDrawColor},
@@ -533,6 +548,13 @@ static const luaL_Reg KZTextBind[] = {
     {NULL, NULL}
 };
 
+//KZGlobals
+static const luaL_Reg KZGlobalsBind[] = {
+    {"SetGameName", KZGlobalsBindSetGameName},
+    {"SetGameOrg", KZGlobalsBindSetGameOrg},
+    {NULL, NULL}
+};
+
 
 bool CKZScripts::Init()
 {
@@ -548,6 +570,7 @@ bool CKZScripts::Init()
         luaL_register(MainLuaState, "KZInput", KZInputBind);
         luaL_register(MainLuaState, "KZFiles", KZFilesBind);
         luaL_register(MainLuaState, "KZText", KZTextBind);
+        luaL_register(MainLuaState, "KZGlobals", KZGlobalsBind);
     }
     return MainLuaState != nullptr;
 }

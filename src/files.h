@@ -30,6 +30,9 @@ public:
     //bool DeleteFile(const char * ppath);
     const char * GetNextLine();
     bool WriteLine(std::string line);
+
+    //not exposed to lua
+    bool ResetSavePath();
 };
 
 extern CKZFiles KZFiles;

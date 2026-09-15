@@ -48,6 +48,8 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/LuaJIT EXCLUDE_FROM_ALL)
 set(KZFRAMEWORK_SRC_FILES
     src/files.cpp
     src/files.h
+    src/globals.cpp
+    src/globals.h
     src/images.cpp
     src/images.h
     src/input.cpp
