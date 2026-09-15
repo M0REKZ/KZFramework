@@ -33,7 +33,7 @@ get_target_property(SDL3_INCLUDE_DIR SDL3::Headers INTERFACE_INCLUDE_DIRECTORIES
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_gfx EXCLUDE_FROM_ALL)
 
-### dont build static
+### dont build shared
 set_target_properties(SDL3_gfx_Shared PROPERTIES EXCLUDE_FROM_ALL TRUE)
 set(SDL3_GFX_LIB SDL3_gfx_Static)
 
