@@ -7,12 +7,19 @@ CKZFiles KZFiles;
 
 bool CKZFiles::Init()
 {
-    return ResetSavePath();
+    SavesPath[0] = '\0';
+    return true;
 }
 
 bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
 {
     CloseFile();
+
+    if(!SavesPath[0])
+    {
+        printf("Cant open file: Save path is not ready (set game name and game org to fix this)\n");
+        return false;
+    }
 
     std::string psavespath = std::string(SavesPath) + ppath;
 
@@ -35,6 +42,12 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
 bool CKZFiles::OpenFileForWriting(const char *ppath, bool bin)
 {
     CloseFile();
+
+    if(!SavesPath[0])
+    {
+        printf("Cant open file: Save path is not ready (set game name and game org to fix this)\n");
+        return false;
+    }
 
     std::string psavespath = std::string(SavesPath) + ppath;
 
@@ -114,6 +127,11 @@ bool CKZFiles::WriteLine(std::string line)
 
 bool CKZFiles::ResetSavePath()
 {
+    if(!KZGlobals.GetGameName()[0] || !KZGlobals.GetGameOrg()[0])
+    {
+        return false;
+    }
+
     char * ppath = SDL_GetPrefPath(KZGlobals.GetGameOrg(), KZGlobals.GetGameName());
 
     if(ppath)

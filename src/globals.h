@@ -3,8 +3,8 @@
 
 class CKZGlobals
 {
-    char GameName[128] = {'N','O','T','-','P','L','U','S','K','A','I','Z','O'};
-    char GameOrg[128] = {'A','.','K','Z','F','r','a','m','e','w','o','r','k','.','g','a','m','e'};
+    char GameName[128] = {'\0'};
+    char GameOrg[128] = {'\0'};
     unsigned char Locked = false;
 public:
     void Lock() { Locked = true; }
