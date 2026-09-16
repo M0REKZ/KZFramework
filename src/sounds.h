@@ -40,6 +40,7 @@ public:
     unsigned int LoadSoundEffect(unsigned int snd) { return LoadAudio(snd, true); }
     bool IsSoundSlotBusy(unsigned int snd);
     bool PlayAudio(unsigned int snd, bool loop, float volume);
+    void StopAudio(unsigned int snd);
     void UnloadAllSounds();
     void UnloadSound(unsigned int snd);
 };

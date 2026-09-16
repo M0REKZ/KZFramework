@@ -153,6 +153,18 @@ bool CKZSounds::PlayAudio(unsigned int snd, bool loop, float volume)
     return true;
 }
 
+void CKZSounds::StopAudio(unsigned int snd)
+{
+    for(auto &playingsound : PlayingSounds)
+    {
+        if(playingsound.GetSoundID() == snd)
+        {
+            playingsound.Reset();
+            break;
+        }
+    }
+}
+
 void CKZSounds::UnloadAllSounds()
 {
     for(auto &playingsound : PlayingSounds)

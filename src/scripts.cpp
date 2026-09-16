@@ -262,6 +262,14 @@ static int KZSoundsBindPlayAudio(lua_State * ls)
     return 1;
 }
 
+static int KZSoundsBindStopAudio(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+
+    KZSounds.StopAudio(id);
+    return 0;
+}
+
 static int KZSoundsBindUnloadSound(lua_State * ls)
 {
     unsigned int id = luaL_checkinteger(ls, 1);
@@ -513,6 +521,7 @@ static const luaL_Reg KZSoundsBind[] = {
     {"LoadSoundEffect", KZSoundsBindLoadSoundEffect},
     {"IsSoundSlotBusy", KZSoundsBindIsSoundSlotBusy},
     {"PlayAudio", KZSoundsBindPlayAudio},
+    {"StopAudio", KZSoundsBindStopAudio},
     {"UnloadAllSounds", KZSoundsBindUnloadAllSounds},
     {"UnloadSound", KZSoundsBindUnloadSound},
     {NULL, NULL}
