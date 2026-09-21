@@ -47,6 +47,11 @@ public:
     void DrawFillEllipse(int cx, int cy, int rx, int ry, Uint32 color);
 
     void Delay(int ms);
+    void DoTargetDelay()
+    {
+        Delay(TargetDelay);
+    }
+    
 private:
     timespec NextTime = {0,0};
 };
