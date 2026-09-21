@@ -55,7 +55,7 @@ int main(int argc, char ** args)
 
                 KZWindow.UpdateWindow();
 
-                KZWindow.Delay(16);
+                KZWindow.Delay(KZWindow.TargetDelay);
             }
         }
     }
