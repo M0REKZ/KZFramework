@@ -46,8 +46,6 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin, bool force_local)
 
     std::string pcurrentpath = std::string("game/") + ppath;
 
-    printf("%s\n",pcurrentpath.c_str());
-
     CurrentFile.open(pcurrentpath, std::ios::in | (bin ? std::ios::binary : 0));
 
     if(CurrentFile.is_open())
