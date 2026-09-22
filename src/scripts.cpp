@@ -450,6 +450,19 @@ static int KZTextBindSetCurrentColor(lua_State * ls)
     return 0;
 }
 
+static int KZTextBindCalculateRenderSize(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    int x;
+    int y;
+
+    KZText.CalculateRenderSize(pArg, &x, &y);
+
+    lua_pushinteger(ls, x);
+    lua_pushinteger(ls, y);
+    return 2;
+}
+
 static int KZTextBindRenderText(lua_State * ls)
 {
     const char * pArg = luaL_checkstring(ls, 1);
@@ -557,6 +570,7 @@ static const luaL_Reg KZTextBind[] = {
     {"RenderText", KZTextBindRenderText},
     {"InitText", KZTextBindInitText},
     {"SetOutline", KZTextBindSetOutline},
+    {"CalculateRenderSize", KZTextBindCalculateRenderSize},
     {NULL, NULL}
 };
 

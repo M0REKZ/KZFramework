@@ -23,6 +23,7 @@ public:
     bool AddCharacter(char ch);
     void SetCurrentColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
     void RenderText(std::string epictexttorender, int x, int y);
+    void CalculateRenderSize(std::string epictexttorender, int * out_x, int * out_y);
 };
 
 extern CKZText KZText;

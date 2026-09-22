@@ -228,3 +228,68 @@ void CKZText::RenderText(std::string epictexttorender, int x, int y)
         }
     }
 }
+
+void CKZText::CalculateRenderSize(std::string epictexttorender, int * out_x, int * out_y)
+{
+    int offsetx = 0;
+    int offsety = 0;
+    for(char ch : epictexttorender)
+    {
+        if(ch == '\r')
+        {
+            continue;
+        }
+
+        if(ch == ' ')
+        {
+            offsetx += 10;
+            continue;
+        }
+
+        if(ch == '\t')
+        {
+            offsetx += 40;
+            continue;
+        }
+
+        if(ch == '\n')
+        {
+            offsetx = 0;
+            offsety += 22;
+            continue;
+        }
+
+        SDL_Surface * pCh = nullptr;
+        try
+        {
+            if(Outline)
+            {
+                pCh = TextCharOutlineCache.at(ch);
+            }
+            else
+            {
+                pCh = TextCharCache.at(ch);
+            }
+        }
+        catch(const std::exception& e)
+        {
+            std::cout << e.what() << '\n';
+            printf("Tried to get character '%c' '%d'\n", ch, (int)ch);
+        }
+        
+        if(pCh)
+        {
+            offsetx += pCh->w;
+        }
+    }
+
+    if(out_x)
+    {
+        *out_x = offsetx;
+    }
+
+    if(out_y)
+    {
+        *out_y = offsety + 22; // do like a '\n'
+    }
+}
