@@ -1,5 +1,6 @@
 
 #include <string>
+#include <cmath>
 #include "images.h"
 #include "window.h"
 

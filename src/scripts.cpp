@@ -379,9 +379,10 @@ static int KZFilesBindOpenFileForReading(lua_State * ls)
 {
     const char * pArg = luaL_checkstring(ls, 1);
     bool bin = lua_toboolean(ls, 2);
+    bool force_local = lua_toboolean(ls, 3);
     if(pArg)
     {
-        lua_pushboolean(ls, KZFiles.OpenFileForReading(pArg, bin));
+        lua_pushboolean(ls, KZFiles.OpenFileForReading(pArg, bin, force_local));
         return 1;
     }
     return 0;

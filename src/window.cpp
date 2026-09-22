@@ -1,5 +1,6 @@
 
 #include <algorithm>
+#include <cmath>
 
 #include "window.h"
 

@@ -11,7 +11,7 @@ bool CKZFiles::Init()
     return true;
 }
 
-bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
+bool CKZFiles::OpenFileForReading(const char *ppath, bool bin, bool force_local)
 {
     CloseFile();
 
@@ -21,9 +21,34 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
         return false;
     }
 
-    std::string psavespath = std::string(SavesPath) + ppath;
+    // SavePath file can override local file
+    if(!force_local)
+    {
+        std::string psavespath = std::string(SavesPath) + ppath;
 
-    CurrentFile.open(psavespath, std::ios::in | (bin ? std::ios::binary : 0));
+        CurrentFile.open(psavespath, std::ios::in | (bin ? std::ios::binary : 0));
+
+        if(CurrentFile.is_open())
+        {
+            if(CurrentFile.bad())
+            {
+                CloseFile();
+                return false;
+            }
+            CurrentFileState = bin ? EFileState::OPEN_READ_BIN : EFileState::OPEN_READ;
+            return true;
+        }
+        else
+        {
+            CloseFile();
+        }
+    }
+
+    std::string pcurrentpath = std::string("game/") + ppath;
+
+    printf("%s\n",pcurrentpath.c_str());
+
+    CurrentFile.open(pcurrentpath, std::ios::in | (bin ? std::ios::binary : 0));
 
     if(CurrentFile.is_open())
     {
@@ -35,8 +60,11 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin)
         CurrentFileState = bin ? EFileState::OPEN_READ_BIN : EFileState::OPEN_READ;
         return true;
     }
-
-    return false;
+    else
+    {
+        CloseFile();
+        return false;
+    }
 }
 
 bool CKZFiles::OpenFileForWriting(const char *ppath, bool bin)

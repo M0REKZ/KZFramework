@@ -23,7 +23,8 @@ class CKZFiles
     EFileState CurrentFileState = EFileState::CLOSED;
 public:
     bool Init();
-    bool OpenFileForReading(const char * ppath, bool bin);
+    // force_local will force check for files in game directory only
+    bool OpenFileForReading(const char * ppath, bool bin, bool force_local);
     bool OpenFileForWriting(const char * ppath, bool bin);
     void CloseFile();
     //better not yet
