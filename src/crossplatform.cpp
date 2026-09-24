@@ -106,8 +106,8 @@ void CKZCrossPlatform::GameLoop()
 
     if(!running)
     {
-        destroy_everything();
         #ifdef __EMSCRIPTEN__
+            destroy_everything();
             emscripten_cancel_main_loop();
         #endif
     }
