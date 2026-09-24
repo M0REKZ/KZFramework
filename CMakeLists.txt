@@ -63,36 +63,9 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     # add Lua5.1
     set(LUA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/Lua)
 
-    set(LUA_SOURCES
-        ${LUA_DIR}/lapi.c
-        ${LUA_DIR}/lauxlib.c
-        ${LUA_DIR}/lbaselib.c
-        ${LUA_DIR}/lcode.c
-        ${LUA_DIR}/ldblib.c
-        ${LUA_DIR}/ldebug.c
-        ${LUA_DIR}/ldo.c
-        ${LUA_DIR}/ldump.c
-        ${LUA_DIR}/lfunc.c
-        ${LUA_DIR}/lgc.c
-        ${LUA_DIR}/linit.c
-        ${LUA_DIR}/liolib.c
-        ${LUA_DIR}/llex.c
-        ${LUA_DIR}/lmathlib.c
-        ${LUA_DIR}/lmem.c
-        ${LUA_DIR}/loadlib.c
-        ${LUA_DIR}/lobject.c
-        ${LUA_DIR}/lopcodes.c
-        ${LUA_DIR}/loslib.c
-        ${LUA_DIR}/lparser.c
-        ${LUA_DIR}/lstate.c
-        ${LUA_DIR}/lstring.c
-        ${LUA_DIR}/lstrlib.c
-        ${LUA_DIR}/ltable.c
-        ${LUA_DIR}/ltablib.c
-        ${LUA_DIR}/ltm.c
-        ${LUA_DIR}/lundump.c
-        ${LUA_DIR}/lvm.c
-        ${LUA_DIR}/lzio.c
+    file(GLOB LUA_SOURCES CONFIGURE_DEPENDS
+        ${LUA_DIR}/*.c
+        ${LUA_DIR}/*.h
     )
 
     add_library(liblua STATIC ${LUA_SOURCES})
@@ -144,24 +117,20 @@ elseif(MINGW)
 endif()
 
 #html
-if( ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
     target_link_options(${EXECUTABLE_NAME} PRIVATE
         ${KZFRAMEWORK_EMSCRIPTEN_LINK_FLAGS}
+        -sNO_DISABLE_EXCEPTION_CATCHING
     )
-
-    target_link_libraries(${EXECUTABLE_NAME} PRIVATE
-        SDL3::SDL3
-        SDL3_mixer::SDL3_mixer
-        ${SDL3_GFX_LIB}
-        SDL3_ttf::SDL3_ttf
-        liblua
-    )
+    set(LUA_LIB liblua)
 else()
-    target_link_libraries(${EXECUTABLE_NAME} PRIVATE
-        SDL3::SDL3
-        SDL3_mixer::SDL3_mixer
-        ${SDL3_GFX_LIB}
-        SDL3_ttf::SDL3_ttf
-        libluajit
-    )
+    set(LUA_LIB libluajit)
 endif()
+
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE
+    SDL3::SDL3
+    SDL3_mixer::SDL3_mixer
+    ${SDL3_GFX_LIB}
+    SDL3_ttf::SDL3_ttf
+    ${LUA_LIB}
+)
