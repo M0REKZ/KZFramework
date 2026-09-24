@@ -2,6 +2,7 @@
 #include <SDL3/SDL.h>
 #include "globals.h"
 #include "files.h"
+#include "crossplatform.h"
 
 CKZFiles KZFiles;
 
@@ -97,6 +98,7 @@ void CKZFiles::CloseFile()
 {
     if(CurrentFile.is_open())
     {
+        KZCrossPlatform.FlushSavePath();
         CurrentFile.close();
     }
     CurrentFileState = EFileState::CLOSED;
@@ -164,7 +166,7 @@ bool CKZFiles::ResetSavePath()
     {
         strncpy(SavesPath, ppath, sizeof(SavesPath));
         SDL_free(ppath);
-        return true;
+        return KZCrossPlatform.InitSavePath(SavesPath);
     }
 
     printf("ERROR INIT SDL SAVE PATH: %s\n", SDL_GetError());

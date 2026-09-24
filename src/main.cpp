@@ -10,6 +10,9 @@
 #include "files.h"
 #include "text.h"
 #include "globals.h"
+#include "crossplatform.h"
+
+bool running = true;
 
 bool init_everything()
 {
@@ -30,33 +33,13 @@ int main(int argc, char ** args)
     int ret = 0;
     if(init_everything())
     {
-        SDL_Event e;
-        bool running = true;
         KZImages.LoadImage(0);
 
         if(KZScripts.RunScript("game/main.lua"))
         {
             KZGlobals.Lock();
 
-            while(running)
-            {
-                KZInput.UpdateInput();
-                while(SDL_PollEvent(&e))
-                {
-                    if(e.type == SDL_EVENT_QUIT)
-                    {
-                        running = false;
-                    }
-                    KZInput.HandleInput(e);
-                }
-
-                if(!KZScripts.RunMain())
-                    break;
-
-                KZWindow.UpdateWindow();
-
-                KZWindow.DoTargetDelay();
-            }
+            KZCrossPlatform.DoMainLoop();
         }
     }
     else

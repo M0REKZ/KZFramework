@@ -1,6 +1,8 @@
 #include "input.h"
 #include "window.h"
 
+#include <cstdio>
+
 CKZInput KZInput;
 
 void CKZInput::ResetInput()

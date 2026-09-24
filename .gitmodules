@@ -13,3 +13,6 @@
 [submodule "lib/SDL3_ttf"]
 	path = lib/SDL3_ttf
 	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "lib/lua"]
+	path = lib/Lua
+	url = https://github.com/lua/lua.git

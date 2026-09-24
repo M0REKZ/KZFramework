@@ -51,7 +51,7 @@ public:
         {
             lua_rawgeti(MainLuaState, LUA_REGISTRYINDEX, MainLuaFunc);
 
-            if (lua_pcall(MainLuaState, 0, 0, 0) != LUA_OK)
+            if (lua_pcall(MainLuaState, 0, 0, 0) != 0 /* LUA_OK */)
             {
                 std::cout << "ERROR LUAJIT: " << lua_tostring(MainLuaState, -1) << '\n';
                 lua_pop(MainLuaState, 1);
