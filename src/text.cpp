@@ -52,10 +52,10 @@ bool CKZText::InitText()
     bool res = true;
 
     //create basic cache
-    char xd = '\0';
+    unsigned char xd = '\0';
     for(xd = 0x21; xd < 0x7E; xd++)
     {
-        if(!AddCharacter(xd))
+        if(!AddCharacter(&xd))
         {
             res = false;
         }
@@ -84,17 +84,53 @@ void CKZText::ClearCache()
     TextCharOutlineCache.clear();
 }
 
-bool CKZText::AddCharacter(char ch)
+bool CKZText::AddCharacter(const unsigned char * p_ch)
 {
     if(!LoadedText)
         return false;
 
-    if(ch == ' ')
+    if(p_ch[0] == ' ')
         return false;
+
+    Uint8 utf8size =
+    !(*p_ch & 128) ? 1 :
+    (
+        ((*p_ch & (64 | 32)) == 64) ? 2 :
+        (
+            ((*p_ch & (64 | 32 | 16)) == (64 | 32)) ? 3 :
+            (
+                ((*p_ch & (64 | 32 | 16 | 8)) == (64 | 32 | 16)) ? 4 : 0
+            )
+        )
+    );
+
+    //first byte codepoint is not valid
+    if(!utf8size)
+    {
+        printf("invalid utf8 character %d (next bytes %d %d %d)\n", p_ch[0], p_ch[1], p_ch[2], p_ch[3]);
+        return false;
+    }
+
+    Uint32 ch = 0;
+    ch = p_ch[0] << 24;
+    if(utf8size > 1)
+    {
+        ch |= p_ch[1] << 16;
+        if(utf8size > 2)
+        {
+            ch |= p_ch[2] << 8;
+            if(utf8size > 3)
+            {
+                ch |= p_ch[3];
+            }
+        }
+    }
+
+    printf("adding %u %d %d %d %d (size %d)\n", ch, p_ch[0], p_ch[1], p_ch[2], p_ch[3] ,utf8size);
 
     Uint8 success = 0;
     
-    SDL_Surface * pSur = TTF_RenderText_Blended(LoadedText, &ch, 1, CurrentColor);
+    SDL_Surface * pSur = TTF_RenderText_Blended(LoadedText, (char *)p_ch, utf8size, CurrentColor);
 
     if(pSur)
     {
@@ -105,7 +141,7 @@ bool CKZText::AddCharacter(char ch)
         color.g = 0;
         color.b = 0;
         color.a = 255;
-        SDL_Surface * pShadow = TTF_RenderText_Blended(LoadedText, &ch, 1, color);
+        SDL_Surface * pShadow = TTF_RenderText_Blended(LoadedText, (char *)p_ch, utf8size, color);
         if(pShadow)
         {
             SDL_Surface * pNewSur = SDL_CreateSurface(pSur->w + 2, pSur->h + 2, pSur->format);
@@ -150,8 +186,8 @@ bool CKZText::AddCharacter(char ch)
     
     if(success)
         return true;
-
-    printf("Error creating image for character %c\n", ch);
+    
+    printf("Error creating image for character %d\n", ch);
 
     if(pSur)
     {
@@ -160,6 +196,39 @@ bool CKZText::AddCharacter(char ch)
     }
 
     return false;
+}
+
+bool CKZText::AddCharSet(std::string epiccharset)
+{
+    int i = 0;
+    while(i < epiccharset.size())
+    {
+        const unsigned char * p_ch = ((const unsigned char *)epiccharset.c_str())+i;
+
+        char utf8size =
+        !(*p_ch & 128) ? 1 :
+        (
+            ((*p_ch & (64 | 32)) == 64) ? 2 :
+            (
+                ((*p_ch & (64 | 32 | 16)) == (64 | 32)) ? 3 :
+                (
+                    ((*p_ch & (64 | 32 | 16 | 8)) == (64 | 32 | 16)) ? 4 : 0
+                )
+            )
+        );
+
+        if(!utf8size)
+        {
+            printf("invalid utf8 character %d (next bytes %d %d %d)\n", p_ch[0], p_ch[1], p_ch[2], p_ch[3]);
+            continue;
+        }
+
+        AddCharacter(p_ch);
+        
+        i += utf8size;
+    }
+
+    return true;
 }
 
 void CKZText::SetCurrentColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
@@ -174,8 +243,10 @@ void CKZText::RenderText(std::string epictexttorender, int x, int y)
 {
     int offsetx = 0;
     int offsety = 0;
-    for(char ch : epictexttorender)
+    Uint32 utf8char = 0;
+    for (int i = 0; i < epictexttorender.size(); i++)
     {
+        unsigned char ch = epictexttorender[i];
         if(ch == '\r')
         {
             continue;
@@ -200,22 +271,56 @@ void CKZText::RenderText(std::string epictexttorender, int x, int y)
             continue;
         }
 
+        unsigned char * p_ch = (unsigned char *)&ch;
+
+        char utf8size =
+        !(*p_ch & 128) ? 1 :
+        (
+            ((*p_ch & (64 | 32)) == 64) ? 2 :
+            (
+                ((*p_ch & (64 | 32 | 16)) == (64 | 32)) ? 3 :
+                (
+                    ((*p_ch & (64 | 32 | 16 | 8)) == (64 | 32 | 16)) ? 4 : 0
+                )
+            )
+        );
+
+        // 'i' can get out of bounds because this, dont use it after this code
+        utf8char = 0;
+        utf8char = ch << 24;
+        if(utf8size > 1)
+        {
+            i++;
+            utf8char |= ((unsigned char)epictexttorender[i]) << 16;
+            if(utf8size > 2)
+            {
+                i++;
+                utf8char |= ((unsigned char)epictexttorender[i]) << 8;
+                if(utf8size > 3)
+                {
+                    i++;
+                    utf8char |= ((unsigned char)epictexttorender[i]);
+                }
+            }
+        }
+        
+
         SDL_Surface * pCh = nullptr;
         try
         {
             if(Outline)
             {
-                pCh = TextCharOutlineCache.at(ch);
+                pCh = TextCharOutlineCache.at(utf8char);
             }
             else
             {
-                pCh = TextCharCache.at(ch);
+                pCh = TextCharCache.at(utf8char);
             }
         }
         catch(const std::exception& e)
         {
             std::cout << e.what() << '\n';
-            printf("Tried to render character '%c' '%d'\n", ch, (int)ch);
+            printf("Tried to render unknown character '%u' (size: %d)\n", utf8char, utf8size);
         }
         
         if(pCh)
@@ -231,10 +336,13 @@ void CKZText::RenderText(std::string epictexttorender, int x, int y)
 
 void CKZText::CalculateRenderSize(std::string epictexttorender, int * out_x, int * out_y)
 {
+    int biggestx = 0;
     int offsetx = 0;
     int offsety = 0;
-    for(char ch : epictexttorender)
+    Uint32 utf8char = 0;
+    for (int i = 0; i < epictexttorender.size(); i++)
     {
+        unsigned char ch = epictexttorender[i];
         if(ch == '\r')
         {
             continue;
@@ -243,49 +351,92 @@ void CKZText::CalculateRenderSize(std::string epictexttorender, int * out_x, int
         if(ch == ' ')
         {
             offsetx += 10;
+            if(biggestx < offsetx)
+                biggestx = offsetx;
             continue;
         }
 
         if(ch == '\t')
         {
             offsetx += 40;
+            if(biggestx < offsetx)
+                biggestx = offsetx;
             continue;
         }
 
         if(ch == '\n')
         {
+            if(biggestx < offsetx)
+                biggestx = offsetx;
             offsetx = 0;
             offsety += 22;
             continue;
         }
+
+
+        unsigned char * p_ch = (unsigned char *)&ch;
+
+        char utf8size =
+        !(*p_ch & 128) ? 1 :
+        (
+            ((*p_ch & (64 | 32)) == 64) ? 2 :
+            (
+                ((*p_ch & (64 | 32 | 16)) == (64 | 32)) ? 3 :
+                (
+                    ((*p_ch & (64 | 32 | 16 | 8)) == (64 | 32 | 16)) ? 4 : 0
+                )
+            )
+        );
+
+        // 'i' can get out of bounds because this, dont use it after this code
+        utf8char = 0;
+        utf8char = ch << 24;
+        if(utf8size > 1)
+        {
+            i++;
+            utf8char |= ((unsigned char)epictexttorender[i]) << 16;
+            if(utf8size > 2)
+            {
+                i++;
+                utf8char |= ((unsigned char)epictexttorender[i]) << 8;
+                if(utf8size > 3)
+                {
+                    i++;
+                    utf8char |= ((unsigned char)epictexttorender[i]);
+                }
+            }
+        }
+        
 
         SDL_Surface * pCh = nullptr;
         try
         {
             if(Outline)
             {
-                pCh = TextCharOutlineCache.at(ch);
+                pCh = TextCharOutlineCache.at(utf8char);
             }
             else
             {
-                pCh = TextCharCache.at(ch);
+                pCh = TextCharCache.at(utf8char);
             }
         }
         catch(const std::exception& e)
         {
             std::cout << e.what() << '\n';
-            printf("Tried to get character '%c' '%d'\n", ch, (int)ch);
+            printf("Tried to get character '%u'\n", utf8char);
         }
         
         if(pCh)
         {
             offsetx += pCh->w;
+            if(biggestx < offsetx)
+                biggestx = offsetx;
         }
     }
 
     if(out_x)
     {
-        *out_x = offsetx;
+        *out_x = biggestx;
     }
 
     if(out_y)

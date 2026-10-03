@@ -433,7 +433,18 @@ static int KZTextBindAddCharacter(lua_State * ls)
     const char * pArg = luaL_checkstring(ls, 1);
     if(pArg)
     {
-        lua_pushboolean(ls, KZText.AddCharacter(pArg[0]));
+        lua_pushboolean(ls, KZText.AddCharacter((const unsigned char *)pArg));
+        return 1;
+    }
+    return 0;
+}
+
+static int KZTextBindAddCharSet(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    if(pArg)
+    {
+        lua_pushboolean(ls, KZText.AddCharSet(pArg));
         return 1;
     }
     return 0;
@@ -566,6 +577,7 @@ static const luaL_Reg KZTextBind[] = {
     {"LoadText", KZTextBindLoadText},
     {"ClearCache", KZTextBindClearCache},
     {"AddCharacter", KZTextBindAddCharacter},
+    {"AddCharSet", KZTextBindAddCharSet},
     {"SetCurrentColor", KZTextBindSetCurrentColor},
     {"RenderText", KZTextBindRenderText},
     {"InitText", KZTextBindInitText},
