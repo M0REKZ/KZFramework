@@ -8,9 +8,6 @@ set(EXECUTABLE_NAME KZGameRunner)
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten" AND NOT KZFRAMEWORK_GAME_DIR)
     message(FATAL_ERROR "KZFRAMEWORK_GAME_DIR is not set, current platform requires it")
 endif()
-if(${CMAKE_SYSTEM_NAME} MATCHES "Android" AND NOT KZFRAMEWORK_GAME_DIR)
-    message(FATAL_ERROR "KZFRAMEWORK_GAME_DIR is not set, current platform requires it")
-endif()
 
 # html
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
@@ -46,16 +43,28 @@ set(SDLMIXER_MIDI_FLUIDSYNTH OFF CACHE BOOL "" FORCE)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_mixer EXCLUDE_FROM_ALL)
 
 # add SDL3_gfx:
-### we will put SDL3::Headers in SDL3_INCLUDE_DIR to pass it into SDL3_gfx
-get_target_property(SDL3_INCLUDE_DIR SDL3::Headers INTERFACE_INCLUDE_DIRECTORIES)
+### CMakeLists.txt included with this SDL3_gfx implementation requires a already installed SDL3
+### But this project uses it as a submodule, causing it to throw a error while finding it
+### So lets just build it as part of this project instead
+set(SDL3_GFX_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/SDL3_gfx)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/lib/SDL3_gfx EXCLUDE_FROM_ALL)
+file(GLOB SDL3_GFX_SOURCES CONFIGURE_DEPENDS
+    ${SDL3_GFX_DIR}/*.c
+    ${SDL3_GFX_DIR}/*.h
+)
 
-### dont build shared
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set_target_properties(SDL3_gfx_Shared PROPERTIES EXCLUDE_FROM_ALL TRUE)
-endif()
-set(SDL3_GFX_LIB SDL3_gfx_Static)
+add_library(SDL3_GFX_LIB STATIC ${SDL3_GFX_SOURCES})
+
+target_include_directories(SDL3_GFX_LIB
+    PUBLIC
+        ${SDL3_GFX_DIR}
+)
+
+### Tell SDL3_gfx where to find SDL3 headers
+target_link_libraries(SDL3_GFX_LIB
+    PUBLIC
+        SDL3::SDL3
+)
 
 # add SDL3_ttf:
 ### need ttf libs
@@ -105,14 +114,13 @@ set(KZFRAMEWORK_SRC_FILES
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
-    add_library(main SHARED ${KZFRAMEWORK_SRC_FILES})
+    add_library(${EXECUTABLE_NAME} SHARED ${KZFRAMEWORK_SRC_FILES})
 else()
     add_executable(${EXECUTABLE_NAME} ${KZFRAMEWORK_SRC_FILES})
 endif()
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    SDL3_gfx::Headers
 )
 
 # we should not need to include standard libraries as .dll/.so
@@ -137,7 +145,7 @@ endif()
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3::SDL3
     SDL3_mixer::SDL3_mixer
-    ${SDL3_GFX_LIB}
+    SDL3_GFX_LIB
     SDL3_ttf::SDL3_ttf
     ${LUA_LIB}
 )

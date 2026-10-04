@@ -1,2 +1,10 @@
+
+#build directory
 build
+
+#vscode config directory
 .vscode
+
+#android generated build files
+android-project/.gradle
+android-project/app/.cxx

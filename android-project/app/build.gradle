@@ -5,6 +5,9 @@ plugins {
 // https://wiki.libsdl.org/SDL3/README-android
 def buildWithCMake = true; //project.hasProperty('BUILD_WITH_CMAKE');
 
+// +KZ for game path
+def KZFrameworkGameDir = project.findProperty("KZFRAMEWORK_GAME_DIR");
+
 android {
     namespace = "org.libsdl.app"
     compileSdkVersion 35
@@ -40,6 +43,7 @@ android {
     if (!project.hasProperty('EXCLUDE_NATIVE_LIBS')) {
         sourceSets.main {
             jniLibs.srcDir 'libs'
+            assets.srcDirs = ["${KZFrameworkGameDir}"]
         }
         externalNativeBuild {
             if (buildWithCMake) {
