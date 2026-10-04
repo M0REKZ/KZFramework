@@ -8,6 +8,9 @@ set(EXECUTABLE_NAME KZGameRunner)
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten" AND NOT KZFRAMEWORK_GAME_DIR)
     message(FATAL_ERROR "KZFRAMEWORK_GAME_DIR is not set, current platform requires it")
 endif()
+if(${CMAKE_SYSTEM_NAME} MATCHES "Android" AND NOT KZFRAMEWORK_GAME_DIR)
+    message(FATAL_ERROR "KZFRAMEWORK_GAME_DIR is not set, current platform requires it")
+endif()
 
 # html
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
@@ -101,7 +104,11 @@ set(KZFRAMEWORK_SRC_FILES
     src/main.cpp
 )
 
-add_executable(${EXECUTABLE_NAME} ${KZFRAMEWORK_SRC_FILES})
+if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    add_library(main SHARED ${KZFRAMEWORK_SRC_FILES})
+else()
+    add_executable(${EXECUTABLE_NAME} ${KZFRAMEWORK_SRC_FILES})
+endif()
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
