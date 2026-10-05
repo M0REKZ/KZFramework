@@ -3,6 +3,7 @@
 #include <cmath>
 #include "images.h"
 #include "window.h"
+#include "files.h"
 
 #include <SDL3_rotozoom.h>
 
@@ -13,7 +14,7 @@ unsigned int CKZImages::LoadImage(unsigned int img)
     if(LoadedImages.find(img) != LoadedImages.end())
         return img;
 
-    std::string filename = "game/data/images/" + std::to_string(img) + ".png";
+    std::string filename = KZFiles.GetBasePath() + "data/images/" + std::to_string(img) + ".png";
 
     SDL_Surface * pImg = SDL_LoadPNG(filename.c_str());
 

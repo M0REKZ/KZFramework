@@ -9,6 +9,18 @@ CKZFiles KZFiles;
 bool CKZFiles::Init()
 {
     SavesPath[0] = '\0';
+    const char * pbase = SDL_GetBasePath();
+    if(!pbase)
+    {
+        return false;
+    }
+    
+    #ifdef KZFRAMEWORK_USE_GAME_DIR
+        BasePath = std::string(pbase) + "game";
+    #else
+        BasePath = std::string(pbase);
+    #endif
+
     return true;
 }
 
@@ -27,15 +39,16 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin, bool force_local)
     {
         std::string psavespath = std::string(SavesPath) + ppath;
 
-        CurrentFile.open(psavespath, std::ios::in | (bin ? std::ios::binary : 0));
+        //CurrentFile.open(psavespath, std::ios::in | (bin ? std::ios::binary : 0));
+        pCurrentFile = SDL_IOFromFile(psavespath.c_str(), bin ? "rb ": "r");
 
-        if(CurrentFile.is_open())
+        if(pCurrentFile)
         {
-            if(CurrentFile.bad())
+            /*if(CurrentFile.bad())
             {
                 CloseFile();
                 return false;
-            }
+            }*/
             CurrentFileState = bin ? EFileState::OPEN_READ_BIN : EFileState::OPEN_READ;
             return true;
         }
@@ -45,17 +58,18 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin, bool force_local)
         }
     }
 
-    std::string pcurrentpath = std::string("game/") + ppath;
+    std::string pcurrentpath = BasePath + ppath;
 
-    CurrentFile.open(pcurrentpath, std::ios::in | (bin ? std::ios::binary : 0));
+    //CurrentFile.open(pcurrentpath, std::ios::in | (bin ? std::ios::binary : 0));
+    pCurrentFile = SDL_IOFromFile(pcurrentpath.c_str(), bin ? "rb ": "r");
 
-    if(CurrentFile.is_open())
+    if(pCurrentFile)
     {
-        if(CurrentFile.bad())
+        /*if(CurrentFile.bad())
         {
             CloseFile();
             return false;
-        }
+        }*/
         CurrentFileState = bin ? EFileState::OPEN_READ_BIN : EFileState::OPEN_READ;
         return true;
     }
@@ -78,28 +92,32 @@ bool CKZFiles::OpenFileForWriting(const char *ppath, bool bin)
 
     std::string psavespath = std::string(SavesPath) + ppath;
 
-    CurrentFile.open(psavespath, std::ios::out | (bin ? std::ios::binary : 0));
+    //CurrentFile.open(psavespath, std::ios::out | (bin ? std::ios::binary : 0));
+    pCurrentFile = SDL_IOFromFile(psavespath.c_str(), bin ? "wb ": "w");
 
-    if(CurrentFile.is_open())
+    if(pCurrentFile)
     {
-        if(CurrentFile.bad())
+        /*if(CurrentFile.bad())
         {
             CloseFile();
             return false;
-        }
+        }*/
         CurrentFileState = bin ? EFileState::OPEN_WRITE_BIN : EFileState::OPEN_WRITE;
         return true;
     }
-
-    return false;
+    else
+    {
+        CloseFile();
+        return false;
+    }
 }
 
 void CKZFiles::CloseFile()
 {
-    if(CurrentFile.is_open())
+    if(pCurrentFile)
     {
-        KZCrossPlatform.FlushSavePath();
-        CurrentFile.close();
+        SDL_CloseIO(pCurrentFile);
+        KZCrossPlatform.FlushSavePath(); //mainly for emscripten
     }
     CurrentFileState = EFileState::CLOSED;
     return;
@@ -107,38 +125,41 @@ void CKZFiles::CloseFile()
 
 const char *CKZFiles::GetNextLine()
 {
-    if(CurrentFileState == EFileState::OPEN_READ && CurrentFile.good())
+    if(CurrentFileState == EFileState::OPEN_READ && pCurrentFile)
     {
-        if(CurrentFile.eof())
+        if(SDL_GetIOStatus(pCurrentFile) == SDL_IO_STATUS_EOF)
         {
             return nullptr;
         }
 
-        std::getline(CurrentFile, FileReadBuffer);
+        //std::getline(CurrentFile, FileReadBuffer);
+        int bytesread = SDL_ReadIO(pCurrentFile, FileReadBuffer, sizeof(FileReadBuffer) - 1);
+        FileReadBuffer[sizeof(FileReadBuffer) - 1] = '\0';
 
-        if(CurrentFile.rdstate() & std::ios::badbit)
+        if(!bytesread)
         {
             return nullptr;
         }
 
-        if(!CurrentFile.eof() && CurrentFile.rdstate() & std::ios::failbit)
+        //this was to remove the failbit in fstream, but now im using SDL3 because fstream does not read APK assets in android
+        /*if(!CurrentFile.eof() && CurrentFile.rdstate() & std::ios::failbit)
         {
             CurrentFile.clear();
-        }
-        return FileReadBuffer.c_str();
+        }*/
+        return FileReadBuffer;
     }
     return nullptr;
 }
 
 bool CKZFiles::WriteLine(std::string line)
 {
-    if(!CurrentFile.is_open())
+    if(!pCurrentFile)
     {
         printf("file is not open\n");
         return false;
     }
 
-    if(!CurrentFile.good())
+    if(SDL_GetIOStatus(pCurrentFile) != SDL_IO_STATUS_READY)
     {
         printf("file stream is broken\n");
         return false;
@@ -146,8 +167,8 @@ bool CKZFiles::WriteLine(std::string line)
 
     if(CurrentFileState == EFileState::OPEN_WRITE)
     {
-        CurrentFile << line << '\n';
-        return !CurrentFile.fail();
+        SDL_WriteIO(pCurrentFile, line.c_str(), line.size());
+        return SDL_GetIOStatus(pCurrentFile) != SDL_IO_STATUS_ERROR;
     }
     printf("write failed\n");
     return false;

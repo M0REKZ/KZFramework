@@ -7,12 +7,14 @@
 
 #include <SDL3/SDL.h>
 
+#ifdef __EMSCRIPTEN__
+    #include <emscripten.h>
+    #include <emscripten/html5.h>
+#endif
+
 CKZCrossPlatform KZCrossPlatform;
 
 #ifdef __EMSCRIPTEN__
-
-    #include <emscripten.h>
-    #include <emscripten/html5.h>
 
     EM_JS(void, InitSavePathEmscripten, (const char* savepath), {
         const mountPath = UTF8ToString(savepath);
@@ -45,8 +47,8 @@ CKZCrossPlatform KZCrossPlatform;
     bool SetMainLoopPropertiesEmscripten = false;
 #endif
 
-bool CKZCrossPlatform::InitSavePath(const char *path)
-{
+    bool CKZCrossPlatform::InitSavePath(const char *path)
+    {
     #ifdef __EMSCRIPTEN__
         InitSavePathEmscripten(path);
         return true;

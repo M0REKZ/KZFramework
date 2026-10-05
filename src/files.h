@@ -7,9 +7,11 @@
 class CKZFiles
 {
     char SavesPath[512] = {'\0'};
-    std::string FileReadBuffer;
+    std::string BasePath;
+    char FileReadBuffer[1024] = {'\0'};
 
-    std::fstream CurrentFile;
+    //using SDL for now because fstream in android is weird
+    SDL_IOStream * pCurrentFile = nullptr;
 
     enum class EFileState : Uint8
     {
@@ -34,6 +36,7 @@ public:
 
     //not exposed to lua
     bool ResetSavePath();
+    const std::string GetBasePath() { return BasePath; };
 };
 
 extern CKZFiles KZFiles;

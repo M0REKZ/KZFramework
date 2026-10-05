@@ -7,12 +7,19 @@ def buildWithCMake = true; //project.hasProperty('BUILD_WITH_CMAKE');
 
 // +KZ for game path
 def KZFrameworkGameDir = project.findProperty("KZFRAMEWORK_GAME_DIR");
+def KZFrameworkAppIdentifier = project.findProperty("KZFRAMEWORK_IDENTIFIER");
+def KZFrameworkAppName = project.findProperty("KZFRAMEWORK_APP_NAME")
 
 android {
-    namespace = "org.libsdl.app"
+    namespace = "io.m0rekz.github.kzframework"
     compileSdkVersion 35
     ndkVersion = "28.2.13676358"
     defaultConfig {
+
+        //+KZ too
+        applicationId "${KZFrameworkAppIdentifier}"
+        resValue "string", "app_name", "${KZFrameworkAppName}"
+
         minSdkVersion 21
         targetSdkVersion 35
         versionCode 1

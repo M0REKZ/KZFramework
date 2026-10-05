@@ -3,6 +3,7 @@
 #include "window.h"
 #include "text.h"
 #include <iostream>
+#include "files.h"
 
 CKZText KZText;
 
@@ -32,7 +33,7 @@ bool CKZText::LoadText(const char *pfile)
         LoadedText = nullptr;
     }
 
-    std::string filename = "game/data/font/" + std::string(pfile) + ".ttf";
+    std::string filename = KZFiles.GetBasePath() + "data/font/" + std::string(pfile) + ".ttf";
 
     TTF_Font * pFont = TTF_OpenFont(filename.c_str(), 20);
 

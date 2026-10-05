@@ -9,6 +9,7 @@ extern "C"
 }
 
 #include <iostream>
+#include <SDL3/SDL.h>
 
 class CKZScripts
 {
@@ -20,19 +21,68 @@ public:
     void Close();
 
     //returns true on success, dont confuse with the lua functions.....
-    inline bool RunScript(const char *pfile)
+    inline bool RunScript(const char *pfilename)
     {
-        if(!pfile)
+        if(!pfilename)
             return false;
 
-        if(luaL_dofile(MainLuaState, pfile))
-        {
-            printf("ERROR LUAJIT: %s\n", lua_tostring(MainLuaState, -1));
-            lua_pop(MainLuaState, 1);
-            return false;
-        }
+        #ifdef __ANDROID__
+            {
+                SDL_IOStream* pfile = SDL_IOFromFile(pfilename, "rb");
 
-        return true;
+                SDL_Log("HELOOOOO MAIN\n");
+
+                char filebytes[256] = {'\0'};
+                std::string fullfilebytes;
+                int bytesread = 0;
+                do
+                {
+                    bytesread = SDL_ReadIO(pfile, filebytes, sizeof(filebytes));
+                    fullfilebytes.append(filebytes, bytesread);
+                } while(bytesread == sizeof(filebytes));
+
+                int status = SDL_GetIOStatus(pfile);
+
+                SDL_CloseIO(pfile);
+
+                if(status == SDL_IO_STATUS_ERROR)
+                {
+                    SDL_Log("ERROR READING FILE: %s\n", pfilename);
+                    return false;
+                }
+
+                int res = luaL_loadbuffer(MainLuaState, fullfilebytes.c_str(), fullfilebytes.size(), pfilename);
+
+                if(res)
+                {
+                    SDL_Log("ERROR LUAJIT: %s\n", lua_tostring(MainLuaState, -1));
+                    lua_pop(MainLuaState, 1);
+                    return false;
+                }
+
+                res = lua_pcall(MainLuaState, 0, LUA_MULTRET, 0);
+
+                if(res)
+                {
+                    SDL_Log("ERROR LUAJIT: %s\n", lua_tostring(MainLuaState, -1));
+                    lua_pop(MainLuaState, 1);
+                    return false;
+                }
+
+                return true;
+            }
+        #else
+
+            if(luaL_dofile(MainLuaState, pfilename))
+            {
+                SDL_Log("ERROR LUAJIT: %s\n", lua_tostring(MainLuaState, -1));
+                lua_pop(MainLuaState, 1);
+                return false;
+            }
+
+            return true;
+
+        #endif
     }
 
     inline bool RunMain()
@@ -53,14 +103,14 @@ public:
 
             if (lua_pcall(MainLuaState, 0, 0, 0) != 0 /* LUA_OK */)
             {
-                std::cout << "ERROR LUAJIT: " << lua_tostring(MainLuaState, -1) << '\n';
+                SDL_Log("ERROR LUAJIT: %s\n", lua_tostring(MainLuaState, -1));
                 lua_pop(MainLuaState, 1);
                 return false;
             }
         }
         else
         {
-            std::cout << "ERROR LUAJIT: No Main Function" << std::endl;
+            SDL_Log("ERROR LUAJIT: No Main Function\n");
             lua_pop(MainLuaState, 1);
             return false;
         }

@@ -291,7 +291,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         if (libraries.length > 0) {
             library = "lib" + libraries[libraries.length - 1] + ".so";
         } else {
-            library = "libmain.so";
+            library = "libKZGameRunner.so";
         }
         return getContext().getApplicationInfo().nativeLibraryDir + "/" + library;
     }
@@ -314,12 +314,13 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      */
     protected String[] getLibraries() {
         return new String[] {
-            "SDL3",
+            // "SDL3",
             // "SDL3_image",
             // "SDL3_mixer",
             // "SDL3_net",
             // "SDL3_ttf",
-            "main"
+            // "main"
+            "KZGameRunner" //+KZ for KZFramework
         };
     }
 

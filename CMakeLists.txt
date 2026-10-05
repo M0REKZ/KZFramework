@@ -9,6 +9,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten" AND NOT KZFRAMEWORK_GAME_DIR)
     message(FATAL_ERROR "KZFRAMEWORK_GAME_DIR is not set, current platform requires it")
 endif()
 
+if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Android"))
+    add_compile_definitions(KZFRAMEWORK_USE_GAME_DIR=1)
+endif()
+
 # html
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
     set(KZFRAMEWORK_EMSCRIPTEN_C_FLAGS "-lidbfs.js -s ASYNCIFY -s ASYNCIFY_IMPORTS=[\"InitSavePathEmscripten\"] -s INITIAL_MEMORY=256MB")

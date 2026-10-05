@@ -16,6 +16,7 @@ extern "C"
 #include "files.h"
 #include "text.h"
 #include "globals.h"
+#include <SDL3/SDL.h>
 
 lua_State * CKZScripts::MainLuaState = nullptr;
 
@@ -593,6 +594,50 @@ static const luaL_Reg KZGlobalsBind[] = {
     {NULL, NULL}
 };
 
+#ifdef __ANDROID__
+    int KZ_Android_File_Loader(lua_State *ls)
+    {
+        const char * parg = luaL_checkstring(ls, 1);
+
+        std::string actual_file_path = parg;
+
+        //fix dots
+        for (size_t i = 0; i < actual_file_path.size(); ++i)
+        {
+            if (actual_file_path[i] == '.')
+                actual_file_path[i] = '/';
+        }
+        //fix extension
+        if(actual_file_path.compare(actual_file_path.size() - 4, 4, ".lua") != 0)
+        {
+            actual_file_path += ".lua";
+        }
+
+        SDL_IOStream* pfile = SDL_IOFromFile(actual_file_path.c_str(), "rb");
+
+        char filebytes[256] = {'\0'};
+        std::string fullfilebytes;
+        int bytesread = 0;
+        do
+        {
+            bytesread = SDL_ReadIO(pfile, filebytes, sizeof(filebytes));
+            fullfilebytes.append(filebytes, bytesread);
+        } while(bytesread == sizeof(filebytes));
+
+        int status = SDL_GetIOStatus(pfile);
+
+        SDL_CloseIO(pfile);
+
+        if(status == SDL_IO_STATUS_ERROR)
+        {
+            return 0;
+        }
+
+        int res = luaL_loadbuffer(ls, fullfilebytes.c_str(), fullfilebytes.size(), parg);
+
+        return 1;
+    }
+#endif
 
 bool CKZScripts::Init()
 {
@@ -600,6 +645,21 @@ bool CKZScripts::Init()
     if(MainLuaState)
     {
         luaL_openlibs(MainLuaState);
+
+        //push our own loader because android is weird
+        #ifdef __ANDROID__
+            lua_getglobal(MainLuaState, "package");
+            lua_getfield(MainLuaState, -1, "loaders");
+
+            int n = (int)lua_objlen(MainLuaState, -1);
+            SDL_Log("number of loaders: %d", n);
+
+            lua_pushcfunction(MainLuaState, KZ_Android_File_Loader);
+            lua_rawseti(MainLuaState, -2, 2);
+
+            lua_pop(MainLuaState, 2);
+        #endif        
+
 
         //push needed functions
         luaL_register(MainLuaState, "KZWindow", KZWindowBind);

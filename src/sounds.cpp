@@ -2,6 +2,7 @@
 #include <string>
 
 #include "sounds.h"
+#include "files.h"
 
 CKZSounds KZSounds;
 
@@ -56,7 +57,7 @@ unsigned int CKZSounds::LoadAudio(unsigned int snd, bool predecode)
         return snd;
 
     //try mp3
-    std::string filename = "game/data/audios/" + std::to_string(snd) + ".mp3";
+    std::string filename = KZFiles.GetBasePath() + "data/audios/" + std::to_string(snd) + ".mp3";
 
     MIX_Audio * pSnd = MIX_LoadAudio(pMainMixer, filename.c_str(), predecode);
 
@@ -64,7 +65,7 @@ unsigned int CKZSounds::LoadAudio(unsigned int snd, bool predecode)
         goto onsuccess;
 
     //try wav
-    filename = "game/data/audios/" + std::to_string(snd) + ".wav";
+    filename = KZFiles.GetBasePath() + "data/audios/" + std::to_string(snd) + ".wav";
 
     pSnd = MIX_LoadAudio(pMainMixer, filename.c_str(), predecode);
 
