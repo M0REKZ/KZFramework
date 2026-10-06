@@ -9,6 +9,79 @@ def buildWithCMake = true; //project.hasProperty('BUILD_WITH_CMAKE');
 def KZFrameworkGameDir = project.findProperty("KZFRAMEWORK_GAME_DIR");
 def KZFrameworkAppIdentifier = project.findProperty("KZFRAMEWORK_IDENTIFIER");
 def KZFrameworkAppName = project.findProperty("KZFRAMEWORK_APP_NAME")
+def KZFrameworkAppIcon = project.findProperty("KZFRAMEWORK_APP_ICON")
+def KZFrameworkAppIconBackground = project.findProperty("KZFRAMEWORK_APP_ICON_BACKGROUND") ?: "#FFFFFF"
+
+if (!KZFrameworkGameDir)
+{
+    throw new GradleException("Need to specify game directory in KZFRAMEWORK_GAME_DIR")
+}
+
+if (!KZFrameworkAppIdentifier)
+{
+    throw new GradleException("Need to specify app identifier in KZFRAMEWORK_IDENTIFIER")
+}
+
+if (!KZFrameworkAppName)
+{
+    throw new GradleException("Need to specify app name in KZFRAMEWORK_APP_NAME")
+}
+
+if (KZFrameworkAppIcon) {
+    def iconFile = file(KZFrameworkAppIcon)
+
+    if (!iconFile.isFile()) {
+        throw new GradleException("Custom icon not found: ${iconFile}")
+    }
+
+    def generatedResDir = file("$buildDir/generated/custom-res")
+
+    def generateCustomIcon = tasks.register("generateCustomIcon") {
+        doLast {
+            def drawableDir = file("$generatedResDir/drawable")
+            def mipmapDir = file("$generatedResDir/mipmap-anydpi-v26")
+            def valuesDir = file("$generatedResDir/values")
+
+            drawableDir.mkdirs()
+            mipmapDir.mkdirs()
+            valuesDir.mkdirs()
+
+            copy {
+                from(iconFile)
+                into(drawableDir)
+                rename { "ic_launcher_foreground.png" }
+            }
+
+            file("$valuesDir/colors.xml").text = """<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">${KZFrameworkAppIconBackground}</color>
+</resources>
+"""
+
+            file("$mipmapDir/ic_launcher.xml").text = """<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+"""
+
+            file("$mipmapDir/ic_launcher_round.xml").text = """<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+"""
+        }
+    }
+
+    tasks.named("preBuild") {
+        dependsOn(generateCustomIcon)
+    }
+}
+else
+{
+    throw new GradleException("Need to specify a icon with KZFRAMEWORK_APP_ICON")
+}
 
 android {
     namespace = "io.m0rekz.github.kzframework"
@@ -51,6 +124,7 @@ android {
         sourceSets.main {
             jniLibs.srcDir 'libs'
             assets.srcDirs = ["${KZFrameworkGameDir}"]
+            res.srcDirs += "$buildDir/generated/custom-res"
         }
         externalNativeBuild {
             if (buildWithCMake) {
