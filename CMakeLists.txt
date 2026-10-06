@@ -11,6 +11,7 @@ endif()
 
 if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Android"))
     add_compile_definitions(KZFRAMEWORK_USE_GAME_DIR=1)
+    set(LUAJIT_DISABLE_JIT ON CACHE BOOL "" FORCE)
 endif()
 
 # html

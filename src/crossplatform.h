@@ -10,6 +10,9 @@ public:
     bool InitSavePath(const char * path);
     bool FlushSavePath();
     void DoMainLoop();
+    void UpdateTouchControls();
+    void HandleTouchInput();
+    void DrawBasicTouchButtons();
 };
 
 extern CKZCrossPlatform KZCrossPlatform;

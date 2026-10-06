@@ -43,11 +43,10 @@ public:
     SState InputState;
     SState PreviousInputState;
 
+    SState QueuedInput;
+
     // probably the worst way of making """""random"""""
     Uint64 EvilRandom();
-
-private:
-    SState QueuedInput;
 };
 
 extern CKZInput KZInput;

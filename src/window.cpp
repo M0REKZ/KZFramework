@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "window.h"
+#include "crossplatform.h"
 
 CKZWindow KZWindow;
 
@@ -82,7 +83,7 @@ void CKZWindow::UpdateWindow()
         SDL_RenderClear(pMainWindowRenderer);
         SDL_UpdateTexture(pMainTexture, nullptr, pMainSurface->pixels, pMainSurface->pitch);
         SDL_RenderTexture(pMainWindowRenderer, pMainTexture, &srcrect, &destrect);
-        //
+        KZCrossPlatform.DrawBasicTouchButtons(); //for android :P
         SDL_RenderPresent(pMainWindowRenderer);
     }
 }

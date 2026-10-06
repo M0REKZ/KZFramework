@@ -16,7 +16,7 @@ bool CKZFiles::Init()
     }
     
     #ifdef KZFRAMEWORK_USE_GAME_DIR
-        BasePath = std::string(pbase) + "game";
+        BasePath = std::string(pbase) + "game/";
     #else
         BasePath = std::string(pbase);
     #endif
@@ -117,6 +117,7 @@ void CKZFiles::CloseFile()
     if(pCurrentFile)
     {
         SDL_CloseIO(pCurrentFile);
+        pCurrentFile = nullptr;
         KZCrossPlatform.FlushSavePath(); //mainly for emscripten
     }
     CurrentFileState = EFileState::CLOSED;
