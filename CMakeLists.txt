@@ -58,17 +58,15 @@ file(GLOB SDL3_GFX_SOURCES CONFIGURE_DEPENDS
     ${SDL3_GFX_DIR}/*.h
 )
 
-add_library(SDL3_GFX_LIB STATIC ${SDL3_GFX_SOURCES})
-
-target_include_directories(SDL3_GFX_LIB
-    PUBLIC
-        ${SDL3_GFX_DIR}
-)
+add_library(libSDL3_gfx STATIC ${SDL3_GFX_SOURCES})
 
 ### Tell SDL3_gfx where to find SDL3 headers
-target_link_libraries(SDL3_GFX_LIB
+get_target_property(SDL3_INCLUDE_DIR SDL3::Headers INTERFACE_INCLUDE_DIRECTORIES)
+
+target_include_directories(libSDL3_gfx
     PUBLIC
-        SDL3::SDL3
+        ${SDL3_GFX_DIR}
+        ${SDL3_INCLUDE_DIR}
 )
 
 # add SDL3_ttf:
@@ -150,7 +148,7 @@ endif()
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE
     SDL3::SDL3
     SDL3_mixer::SDL3_mixer
-    SDL3_GFX_LIB
+    libSDL3_gfx
     SDL3_ttf::SDL3_ttf
     ${LUA_LIB}
 )
