@@ -11,6 +11,7 @@ endif()
 
 if(NOT (${CMAKE_SYSTEM_NAME} MATCHES "Android"))
     add_compile_definitions(KZFRAMEWORK_USE_GAME_DIR=1)
+    # JIT is known to cause some problems in android, lets disable it for now until i change my mind
     set(LUAJIT_DISABLE_JIT ON CACHE BOOL "" FORCE)
 endif()
 
