@@ -40,7 +40,7 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin, bool force_local)
         std::string psavespath = std::string(SavesPath) + ppath;
 
         //CurrentFile.open(psavespath, std::ios::in | (bin ? std::ios::binary : 0));
-        pCurrentFile = SDL_IOFromFile(psavespath.c_str(), bin ? "rb ": "r");
+        pCurrentFile = SDL_IOFromFile(psavespath.c_str(), bin ? "rb": "r");
 
         if(pCurrentFile)
         {
@@ -61,7 +61,7 @@ bool CKZFiles::OpenFileForReading(const char *ppath, bool bin, bool force_local)
     std::string pcurrentpath = BasePath + ppath;
 
     //CurrentFile.open(pcurrentpath, std::ios::in | (bin ? std::ios::binary : 0));
-    pCurrentFile = SDL_IOFromFile(pcurrentpath.c_str(), bin ? "rb ": "r");
+    pCurrentFile = SDL_IOFromFile(pcurrentpath.c_str(), bin ? "rb": "r");
 
     if(pCurrentFile)
     {
@@ -93,7 +93,7 @@ bool CKZFiles::OpenFileForWriting(const char *ppath, bool bin)
     std::string psavespath = std::string(SavesPath) + ppath;
 
     //CurrentFile.open(psavespath, std::ios::out | (bin ? std::ios::binary : 0));
-    pCurrentFile = SDL_IOFromFile(psavespath.c_str(), bin ? "wb ": "w");
+    pCurrentFile = SDL_IOFromFile(psavespath.c_str(), bin ? "wb": "w");
 
     if(pCurrentFile)
     {
