@@ -30,8 +30,6 @@ public:
             {
                 SDL_IOStream* pfile = SDL_IOFromFile(pfilename, "rb");
 
-                SDL_Log("HELOOOOO MAIN\n");
-
                 char filebytes[256] = {'\0'};
                 std::string fullfilebytes;
                 int bytesread = 0;
