@@ -24,7 +24,7 @@ unsigned int CKZImages::LoadImage(unsigned int img)
         return img;
     }
 
-    printf("ERROR: Could not load image %d %s!\n", img, filename.c_str());
+    SDL_Log("ERROR: Could not load image %d %s!\n", img, filename.c_str());
 
     //0 on error
     return 0;
@@ -39,7 +39,7 @@ void CKZImages::RenderImage(unsigned int img, int x_from, int y_from, int w_from
 {
     if(LoadedImages.find(img) == LoadedImages.end())
     {
-        printf("ERROR: Cant render image %d because it is not loaded!\n", img);
+        SDL_Log("ERROR: Cant render image %d because it is not loaded!\n", img);
         return;
     }
     SDL_Rect srcrect = {x_from, y_from, w_from, h_from};
@@ -52,7 +52,7 @@ void CKZImages::RenderRotoZoom(unsigned int img, int x_from, int y_from, int w_f
 {
     if(LoadedImages.find(img) == LoadedImages.end())
     {
-        printf("ERROR: Cant render image %d because it is not loaded!\n", img);
+        SDL_Log("ERROR: Cant render image %d because it is not loaded!\n", img);
         return;
     }
     SDL_Surface *srcimg = LoadedImages.at(img);

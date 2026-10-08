@@ -11,7 +11,7 @@ bool CKZText::Init()
 {
     if(!TTF_Init())
     {
-        printf("ERROR INIT SDL_TTF: %s\n", SDL_GetError());
+        SDL_Log("ERROR INIT SDL_TTF: %s\n", SDL_GetError());
         return false;
     }
 
@@ -43,7 +43,7 @@ bool CKZText::LoadText(const char *pfile)
         return true;
     }
 
-    printf("ERROR: Could not load font %s!\n", filename.c_str());
+    SDL_Log("ERROR: Could not load font %s!\n", filename.c_str());
 
     return false;
 }
@@ -108,7 +108,7 @@ bool CKZText::AddCharacter(const unsigned char * p_ch)
     //first byte codepoint is not valid
     if(!utf8size)
     {
-        printf("invalid utf8 character %d (next bytes %d %d %d)\n", p_ch[0], p_ch[1], p_ch[2], p_ch[3]);
+        SDL_Log("invalid utf8 character %d (next bytes %d %d %d)\n", p_ch[0], p_ch[1], p_ch[2], p_ch[3]);
         return false;
     }
 
@@ -127,7 +127,7 @@ bool CKZText::AddCharacter(const unsigned char * p_ch)
         }
     }
 
-    printf("adding %u %d %d %d %d (size %d)\n", ch, p_ch[0], p_ch[1], p_ch[2], p_ch[3] ,utf8size);
+    SDL_Log("adding %u %d %d %d %d (size %d)\n", ch, p_ch[0], p_ch[1], p_ch[2], p_ch[3] ,utf8size);
 
     Uint8 success = 0;
     
@@ -188,7 +188,7 @@ bool CKZText::AddCharacter(const unsigned char * p_ch)
     if(success)
         return true;
     
-    printf("Error creating image for character %d\n", ch);
+    SDL_Log("Error creating image for character %d\n", ch);
 
     if(pSur)
     {
@@ -220,7 +220,7 @@ bool CKZText::AddCharSet(std::string epiccharset)
 
         if(!utf8size)
         {
-            printf("invalid utf8 character %d (next bytes %d %d %d)\n", p_ch[0], p_ch[1], p_ch[2], p_ch[3]);
+            SDL_Log("invalid utf8 character %d (next bytes %d %d %d)\n", p_ch[0], p_ch[1], p_ch[2], p_ch[3]);
             continue;
         }
 
@@ -321,7 +321,7 @@ void CKZText::RenderText(std::string epictexttorender, int x, int y)
         catch(const std::exception& e)
         {
             std::cout << e.what() << '\n';
-            printf("Tried to render unknown character '%u' (size: %d)\n", utf8char, utf8size);
+            SDL_Log("Tried to render unknown character '%u' (size: %d)\n", utf8char, utf8size);
         }
         
         if(pCh)
@@ -424,7 +424,7 @@ void CKZText::CalculateRenderSize(std::string epictexttorender, int * out_x, int
         catch(const std::exception& e)
         {
             std::cout << e.what() << '\n';
-            printf("Tried to get character '%u'\n", utf8char);
+            SDL_Log("Tried to get character '%u'\n", utf8char);
         }
         
         if(pCh)

@@ -10,7 +10,7 @@ bool CKZSounds::Init()
 {
     if(!MIX_Init())
     {
-        printf("ERROR INIT SDL_MIXER: %s\n", SDL_GetError());
+        SDL_Log("ERROR INIT SDL_MIXER: %s\n", SDL_GetError());
         return false;
     }
 
@@ -24,7 +24,7 @@ bool CKZSounds::Init()
 
     if(!pMainMixer)
     {
-        printf("ERROR INIT SDL_MIXER: %s\n", SDL_GetError());
+        SDL_Log("ERROR INIT SDL_MIXER: %s\n", SDL_GetError());
         return false;
     }
 
@@ -72,7 +72,7 @@ unsigned int CKZSounds::LoadAudio(unsigned int snd, bool predecode)
     if(pSnd)
         goto onsuccess;
 
-    printf("ERROR: Could not load audio %d %s!\n", snd, filename.c_str());
+    SDL_Log("ERROR: Could not load audio %d %s!\n", snd, filename.c_str());
 
     //0 on error
     return 0;
@@ -93,7 +93,7 @@ bool CKZSounds::PlayAudio(unsigned int snd, bool loop, float volume)
 {
     if(LoadedSounds.find(snd) == LoadedSounds.end())
     {
-        printf("ERROR: Audio %d is not loaded!\n", snd);
+        SDL_Log("ERROR: Audio %d is not loaded!\n", snd);
         return false;
     }
 
@@ -139,7 +139,7 @@ bool CKZSounds::PlayAudio(unsigned int snd, bool loop, float volume)
     PlayingSounds[bestchannel].pTrack = MIX_CreateTrack(pMainMixer);
     if(!(PlayingSounds[bestchannel].pTrack && MIX_SetTrackAudio(PlayingSounds[bestchannel].pTrack, LoadedSounds[snd])))
     {
-        printf("ERROR: Could not play sound %d!! %s\n", snd, SDL_GetError());
+        SDL_Log("ERROR: Could not play sound %d!! %s\n", snd, SDL_GetError());
         return false;
     }
 

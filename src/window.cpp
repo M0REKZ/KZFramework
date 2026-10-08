@@ -11,35 +11,35 @@ bool CKZWindow::Init()
 {
     if(!SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS))
     {
-        printf("ERROR INIT SDL: %s\n", SDL_GetError());
+        SDL_Log("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
 
     pMainWindow = SDL_CreateWindow("+KZ Framework Game", Width, Height, SDL_WINDOW_RESIZABLE);
     if(!pMainWindow)
     {
-        printf("ERROR INIT SDL: %s\n", SDL_GetError());
+        SDL_Log("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
 
     pMainWindowRenderer = SDL_CreateRenderer(pMainWindow, nullptr);
     if(!pMainWindowRenderer)
     {
-        printf("ERROR INIT SDL: %s\n", SDL_GetError());
+        SDL_Log("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
 
     pMainSurface = SDL_CreateSurface(Width, Height, SDL_PIXELFORMAT_RGBA8888);
     if(!pMainSurface)
     {
-        printf("ERROR INIT SDL: %s\n", SDL_GetError());
+        SDL_Log("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
 
     pMainTexture = SDL_CreateTexture(pMainWindowRenderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, Width, Height);
     if(!pMainTexture)
     {
-        printf("ERROR INIT SDL: %s\n", SDL_GetError());
+        SDL_Log("ERROR INIT SDL: %s\n", SDL_GetError());
         return false;
     }
     SDL_SetTextureScaleMode(pMainTexture, SDL_SCALEMODE_NEAREST);
@@ -92,7 +92,7 @@ bool CKZWindow::ChangeWindowTitle(const char *pnewtitle)
 {
     if(pnewtitle && SDL_SetWindowTitle(pMainWindow, pnewtitle))
         return true;
-    printf("ERROR CHANGE WINDOW TITLE SDL: %s\n", SDL_GetError());
+    SDL_Log("ERROR CHANGE WINDOW TITLE SDL: %s\n", SDL_GetError());
     return false;
 }
 
