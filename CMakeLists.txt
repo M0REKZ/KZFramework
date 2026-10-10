@@ -1,3 +1,11 @@
+#
+#   KZFramework
+#   Copyright (C) Benjamín Gajardo
+#
+#   This program is shared under the PLUSKAIZO LICENSE, you should have received
+#   a copy of the license along with the program.
+#
+
 cmake_minimum_required(VERSION 3.20)
 project(KZFramework)
 
