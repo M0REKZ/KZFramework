@@ -519,6 +519,65 @@ static int KZGlobalsBindSetGameOrg(lua_State * ls)
     return 0;
 }
 
+static int KZWindowBindBegin3DDrawing(lua_State * ls)
+{
+    const char * pArg = luaL_checkstring(ls, 1);
+    KZWindow.Begin3DDrawing(pArg);
+    return 0;
+}
+
+static int KZWindowBindEnd3DDrawing(lua_State * ls)
+{
+    KZWindow.End3DDrawing();
+    return 0;
+}
+
+static int KZWindowBindClear3DDrawing(lua_State * ls)
+{
+    KZWindow.Clear3DDrawing();
+    return 0;
+}
+
+static int KZWindowBindAdd3DVertex(lua_State * ls)
+{
+    float x = luaL_checknumber(ls, 1);
+    float y = luaL_checknumber(ls, 2);
+    float z = luaL_checknumber(ls, 3);
+    Uint32 color = luaL_checkinteger(ls, 4);
+    float u = luaL_optnumber(ls, 5, 0);
+    float v = luaL_optnumber(ls, 6, 0);
+    KZWindow.Add3DVertex(x, y, z, color, u, v);
+    return 0;
+}
+
+static int KZWindowSet3DCamera(lua_State * ls)
+{
+    float x = luaL_checknumber(ls, 1);
+    float y = luaL_checknumber(ls, 2);
+    float z = luaL_checknumber(ls, 3);
+    float x_to = luaL_checknumber(ls, 4);
+    float y_to = luaL_checknumber(ls, 5);
+    float z_to = luaL_checknumber(ls, 6);
+    KZWindow.Set3DCamera(x, y, z, x_to, y_to, z_to);
+    return 0;
+}
+
+static int KZImagesCopyImageFor3D(lua_State * ls)
+{
+    unsigned int img = luaL_checkinteger(ls, 1);
+    
+    lua_pushinteger(ls, KZImages.CopyImageFor3D(img));
+    return 1;
+}
+
+static int KZImagesSet3DImage(lua_State * ls)
+{
+    unsigned int img = luaL_checkinteger(ls, 1);
+    
+    KZImages.Set3DImage(img);
+    return 0;
+}
+
 //KZWindow
 static const luaL_Reg KZWindowBind[] = {
     {"ConvertToWindowDrawColor", KZWindowBindConverToWindowDrawColor},
@@ -532,6 +591,11 @@ static const luaL_Reg KZWindowBind[] = {
     {"GetHeight", KZWindow_GetHeight},
     {"ChangeWindowTitle", KZWindowBindChangeWindowTitle},
     {"SetTargetDelay", KZWindow_SetTargetDelay},
+    {"Set3DCamera", KZWindowSet3DCamera},
+    {"Begin3DDrawing", KZWindowBindBegin3DDrawing},
+    {"End3DDrawing", KZWindowBindEnd3DDrawing},
+    {"Clear3DDrawing", KZWindowBindClear3DDrawing},
+    {"Add3DVertex", KZWindowBindAdd3DVertex},
     {NULL, NULL}
 };
 
@@ -546,6 +610,8 @@ static const luaL_Reg KZImagesBind[] = {
     {"UnloadAllImages", KZImagesBindUnloadAllImages},
     {"GetImageWidth", KZWindow_GetImageWidth},
     {"GetImageHeight", KZWindow_GetImageHeight},
+    {"CopyImageFor3D", KZImagesCopyImageFor3D},
+    {"Set3DImage", KZImagesSet3DImage},
     {NULL, NULL}
 };
 

@@ -26,6 +26,9 @@ class CKZImages
     void UnloadAllImages();
     void UnloadImage(unsigned int img);
 
+    unsigned int CopyImageFor3D(unsigned int img);
+    void Set3DImage(unsigned int img3d);
+
     inline int GetImageWidth(unsigned int img)
     {
         try

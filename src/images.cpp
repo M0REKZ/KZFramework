@@ -14,6 +14,8 @@
 
 #include <SDL3_rotozoom.h>
 
+#include "rlsw_include.h"
+
 CKZImages KZImages;
 
 unsigned int CKZImages::LoadImage(unsigned int img)
@@ -121,4 +123,23 @@ void CKZImages::UnloadImage(unsigned int img)
     }
     SDL_DestroySurface(LoadedImages[img]);
     LoadedImages.erase(img);
+}
+
+unsigned int CKZImages::CopyImageFor3D(unsigned int img)
+{
+    if(LoadedImages.find(img) == LoadedImages.end())
+    {
+        SDL_Log("ERROR: Cant copy image %d for 3d because it is not loaded!\n", img);
+        return 0;
+    }
+    Uint32 texture = 0;
+    swGenTextures(1, &texture);
+    swBindTexture(texture);
+    swTexImage2D(LoadedImages[img]->w, LoadedImages[img]->h, SWformat::SW_RGBA, SWtype::SW_UNSIGNED_BYTE, LoadedImages[img]->pixels);
+    return texture;
+}
+
+void CKZImages::Set3DImage(unsigned int img3d)
+{
+    swBindTexture(img3d);
 }

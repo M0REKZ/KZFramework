@@ -114,6 +114,8 @@ set(KZFRAMEWORK_SRC_FILES
     src/images.h
     src/input.cpp
     src/input.h
+    src/rlsw_link.c
+    src/rlsw_include.h
     src/scripts.cpp
     src/scripts.h
     src/sounds.cpp
@@ -133,6 +135,11 @@ endif()
 
 target_include_directories(${EXECUTABLE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+# add rlsw
+target_include_directories(${EXECUTABLE_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/rlsw
 )
 
 # we should not need to include standard libraries as .dll/.so

@@ -11,6 +11,8 @@
 
 #include <SDL3/SDL.h>
 
+#include "rlsw_include.h"
+
 #include <time.h>
 
 class CKZWindow
@@ -55,6 +57,13 @@ public:
     void DrawFillRect(int x_from, int y_from, int x_to, int y_to, Uint32 color);
     void DrawEllipse(int cx, int cy, int rx, int ry, Uint32 color);
     void DrawFillEllipse(int cx, int cy, int rx, int ry, Uint32 color);
+
+    //3D drawing i think
+    void Begin3DDrawing(const char * pdrawmode);
+    void Add3DVertex(float x, float y, float z, Uint32 color, float u, float v);
+    void End3DDrawing();
+    void Clear3DDrawing() { swClear(SW_DEPTH_BUFFER_BIT | SW_COLOR_BUFFER_BIT); }
+    void Set3DCamera(float x, float y, float z, float x_look, float y_look, float z_look);
 
     void Delay(int ms);
     void DoTargetDelay()
