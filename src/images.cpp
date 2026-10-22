@@ -136,6 +136,10 @@ unsigned int CKZImages::CopyImageFor3D(unsigned int img)
     swGenTextures(1, &texture);
     swBindTexture(texture);
     swTexImage2D(LoadedImages[img]->w, LoadedImages[img]->h, SWformat::SW_RGBA, SWtype::SW_UNSIGNED_BYTE, LoadedImages[img]->pixels);
+    //make sure it repeats if uv is out of texture
+    swTexParameteri(SWtexparam::SW_TEXTURE_WRAP_S, SWwrap::SW_REPEAT);
+    swTexParameteri(SWtexparam::SW_TEXTURE_WRAP_T, SWwrap::SW_REPEAT);
+
     return texture;
 }
 
