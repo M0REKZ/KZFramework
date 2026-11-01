@@ -1,6 +1,6 @@
-# +KZ Framework
+# KZFramework
 
-KZFramework (+KZ Framework) by +KZ (i mean... it is in the name...)
+KZFramework by +KZ (i mean... it is in the name...)
 
 Also probably the worst framework ever made
 
