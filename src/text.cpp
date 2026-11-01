@@ -144,8 +144,6 @@ bool CKZText::AddCharacter(const unsigned char * p_ch)
         }
     }
 
-    SDL_Log("adding %u %d %d %d %d (size %d)\n", ch, p_ch[0], p_ch[1], p_ch[2], p_ch[3] ,utf8size);
-
     Uint8 success = 0;
     
     SDL_Surface * pSur = TTF_RenderText_Blended(LoadedText, (char *)p_ch, utf8size, CurrentColor);
