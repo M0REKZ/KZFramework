@@ -171,6 +171,21 @@ bool CKZSounds::PlayAudio(unsigned int snd, bool loop, float volume)
     return true;
 }
 
+void CKZSounds::SetPlayingAudioVolume(unsigned int snd, float volume)
+{
+    for(auto &playingsound : PlayingSounds)
+    {
+        if(playingsound.GetSoundID() == snd)
+        {
+            if(playingsound.pTrack)
+            {
+                MIX_SetTrackGain(playingsound.pTrack, volume);
+            }
+            break;
+        }
+    }
+}
+
 void CKZSounds::StopAudio(unsigned int snd)
 {
     for(auto &playingsound : PlayingSounds)

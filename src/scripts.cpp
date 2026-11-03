@@ -304,6 +304,14 @@ static int KZSoundsBindUnloadAllSounds(lua_State * ls)
     return 0;
 }
 
+static int KZSoundsBindSetPlayingAudioVolume(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+    float vol = luaL_checknumber(ls, 2);
+    KZSounds.SetPlayingAudioVolume(id, vol);
+    return 0;
+}
+
 static int KZInput_GetInputState(lua_State * ls)
 {
     CKZInput::SState * pInputState = &KZInput.InputState;
@@ -635,6 +643,7 @@ static const luaL_Reg KZSoundsBind[] = {
     {"StopAudio", KZSoundsBindStopAudio},
     {"UnloadAllSounds", KZSoundsBindUnloadAllSounds},
     {"UnloadSound", KZSoundsBindUnloadSound},
+    {"SetPlayingAudioVolume", KZSoundsBindSetPlayingAudioVolume},
     {NULL, NULL}
 };
 
