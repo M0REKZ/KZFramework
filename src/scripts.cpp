@@ -231,6 +231,15 @@ static int KZImagesBindIsImageSlotBusy(lua_State * ls)
     return 1;
 }
 
+static int KZImagesBindSaveImageAs(lua_State * ls)
+{
+    unsigned int id = luaL_checkinteger(ls, 1);
+    const char * pname = luaL_checkstring(ls, 2);
+
+    lua_pushboolean(ls, KZImages.SaveImageAs(id, pname));
+    return 1;
+}
+
 static int KZWindow_GetImageWidth(lua_State * ls)
 {
     unsigned int id = luaL_checkinteger(ls, 1);
@@ -639,6 +648,7 @@ static const luaL_Reg KZImagesBind[] = {
     {"GetImageHeight", KZWindow_GetImageHeight},
     {"CopyImageFor3D", KZImagesCopyImageFor3D},
     {"Set3DImage", KZImagesSet3DImage},
+    {"SaveImageAs", KZImagesBindSaveImageAs},
     {NULL, NULL}
 };
 

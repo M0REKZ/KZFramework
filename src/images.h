@@ -36,6 +36,8 @@ class CKZImages
     void UnloadAllImages();
     void UnloadImage(unsigned int img);
 
+    bool SaveImageAs(unsigned int img, const char * name);
+
     unsigned int CopyImageFor3D(unsigned int img);
     void Set3DImage(unsigned int img3d);
 

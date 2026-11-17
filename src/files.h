@@ -54,7 +54,8 @@ public:
 
     //not exposed to lua
     bool ResetSavePath();
-    const std::string GetBasePath() { return BasePath; };
+    const std::string GetBasePath() { return BasePath; }
+    const char * GetSavesPath() { return SavesPath; }
 };
 
 extern CKZFiles KZFiles;

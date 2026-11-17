@@ -25,6 +25,7 @@
 #include <SDL3_rotozoom.h>
 
 #include "rlsw_include.h"
+#include "globals.h"
 
 CKZImages KZImages;
 
@@ -133,6 +134,38 @@ void CKZImages::UnloadImage(unsigned int img)
     }
     SDL_DestroySurface(LoadedImages[img]);
     LoadedImages.erase(img);
+}
+
+bool CKZImages::SaveImageAs(unsigned int img, const char * name)
+{
+    if(!KZGlobals.GetGameName()[0] || !KZGlobals.GetGameOrg()[0])
+    {
+         SDL_Log("ERROR: Set game name and org first");
+        return false;
+    }
+
+    const char * ppath = KZFiles.GetSavesPath();
+    if(!ppath || (ppath && !ppath[0]))
+    {
+        SDL_Log("Cant save image: Save path is not ready (set game name and game org to fix this)\n");
+        return false;
+    }
+
+    if(!name)
+        return false;
+    if(!name[0])
+        return false;
+    if(LoadedImages.find(img) == LoadedImages.end())
+    {
+        return false;
+    }
+    std::string finalpath = std::string(ppath) + name;
+    if(!SDL_SavePNG(LoadedImages[img], finalpath.c_str()))
+    {
+        SDL_Log("ERROR: Could not save image %d to %s !!!\n", img, name);
+        return false;
+    }
+    return true;
 }
 
 unsigned int CKZImages::CopyImageFor3D(unsigned int img)
