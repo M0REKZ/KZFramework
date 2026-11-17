@@ -46,6 +46,66 @@ bool CKZWindow::Init()
         return false;
     }
 
+    return ResetSurface();
+}
+
+void CKZWindow::Destroy()
+{
+    if(pMainTexture)
+        SDL_DestroyTexture(pMainTexture);
+    if(pMainSurface)
+        SDL_DestroySurface(pMainSurface);
+    if(pMainWindowRenderer)
+        SDL_DestroyRenderer(pMainWindowRenderer);
+    if(pMainWindow)
+        SDL_DestroyWindow(pMainWindow);
+    swClose();
+    SDL_Quit();
+}
+
+void CKZWindow::UpdateWindow()
+{
+    int w, h;
+    if(SDL_GetWindowSizeInPixels(pMainWindow, &w, &h))
+    {
+        SDL_FRect srcrect, destrect; 
+        srcrect.x = 0; srcrect.y = 0; srcrect.w = Width; srcrect.h = Height;
+
+        float scaleX = (float)w / srcrect.w;
+        float scaleY = (float)h / srcrect.h;
+        float scale  = (scaleX < scaleY) ? scaleX : scaleY;
+
+        int destW = (int)(srcrect.w * scale);
+        int destH = (int)(srcrect.h * scale);
+
+        destrect.w = destW;
+        destrect.h = destH;
+        destrect.x = (w - destW) / 2;
+        destrect.y = (h - destH) / 2;
+        SDL_SetRenderDrawColor(pMainWindowRenderer, 0, 0, 0, 255);
+        SDL_RenderClear(pMainWindowRenderer);
+        SDL_UpdateTexture(pMainTexture, nullptr, pMainSurface->pixels, pMainSurface->pitch);
+        SDL_RenderTexture(pMainWindowRenderer, pMainTexture, &srcrect, &destrect);
+        KZCrossPlatform.DrawBasicTouchButtons(); //for android :P
+        SDL_RenderPresent(pMainWindowRenderer);
+    }
+}
+
+bool CKZWindow::ResetSurface()
+{
+    if(pMainTexture)
+    {
+        SDL_DestroyTexture(pMainTexture);
+        pMainTexture = nullptr;
+    }
+    if(pMainSurface)
+    {
+        //"you must free the surface before you free the pixel data"
+        SDL_DestroySurface(pMainSurface);
+        swClose();
+        pMainSurface = nullptr;
+    }
+
     //rlsw buffer format is ABGR8888
     pMainTexture = SDL_CreateTexture(pMainWindowRenderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, Width, Height);
     if(!pMainTexture)
@@ -109,54 +169,32 @@ bool CKZWindow::Init()
     return true;
 }
 
-void CKZWindow::Destroy()
-{
-    if(pMainTexture)
-        SDL_DestroyTexture(pMainTexture);
-    if(pMainSurface)
-        SDL_DestroySurface(pMainSurface);
-    if(pMainWindowRenderer)
-        SDL_DestroyRenderer(pMainWindowRenderer);
-    if(pMainWindow)
-        SDL_DestroyWindow(pMainWindow);
-    swClose();
-    SDL_Quit();
-}
-
-void CKZWindow::UpdateWindow()
-{
-    int w, h;
-    if(SDL_GetWindowSizeInPixels(pMainWindow, &w, &h))
-    {
-        SDL_FRect srcrect, destrect; 
-        srcrect.x = 0; srcrect.y = 0; srcrect.w = Width; srcrect.h = Height;
-
-        float scaleX = (float)w / srcrect.w;
-        float scaleY = (float)h / srcrect.h;
-        float scale  = (scaleX < scaleY) ? scaleX : scaleY;
-
-        int destW = (int)(srcrect.w * scale);
-        int destH = (int)(srcrect.h * scale);
-
-        destrect.w = destW;
-        destrect.h = destH;
-        destrect.x = (w - destW) / 2;
-        destrect.y = (h - destH) / 2;
-        SDL_SetRenderDrawColor(pMainWindowRenderer, 0, 0, 0, 255);
-        SDL_RenderClear(pMainWindowRenderer);
-        SDL_UpdateTexture(pMainTexture, nullptr, pMainSurface->pixels, pMainSurface->pitch);
-        SDL_RenderTexture(pMainWindowRenderer, pMainTexture, &srcrect, &destrect);
-        KZCrossPlatform.DrawBasicTouchButtons(); //for android :P
-        SDL_RenderPresent(pMainWindowRenderer);
-    }
-}
-
 bool CKZWindow::ChangeWindowTitle(const char *pnewtitle)
 {
     if(pnewtitle && SDL_SetWindowTitle(pMainWindow, pnewtitle))
         return true;
     SDL_Log("ERROR CHANGE WINDOW TITLE SDL: %s\n", SDL_GetError());
     return false;
+}
+
+bool CKZWindow::ResizeWindow(int new_w, int new_h)
+{
+    bool res = SDL_SetWindowSize(pMainWindow, new_w, new_h);
+    if(res)
+    {
+        SDL_SyncWindow(pMainWindow);
+        Width = new_w;
+        Height = new_h;
+        if(!ResetSurface())
+        {
+            return false;
+        }
+    }
+    else
+    {
+        SDL_Log("ERROR RESIZE WINDOW SDL: %s\n", SDL_GetError());
+    }
+    return res;
 }
 
 void CKZWindow::Delay(int ms)

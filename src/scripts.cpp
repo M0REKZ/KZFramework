@@ -143,6 +143,14 @@ static int KZWindow_SetTargetDelay(lua_State * ls)
     return 0;
 }
 
+static int KZWindowBindResizeWindow(lua_State * ls)
+{
+    unsigned int w = luaL_checkinteger(ls, 1);
+    unsigned int h = luaL_checkinteger(ls, 2);
+    lua_pushboolean(ls, KZWindow.ResizeWindow(w, h));
+    return 1;
+}
+
 static int KZImagesBindLoadImage(lua_State * ls)
 {
     unsigned int id = luaL_checkinteger(ls, 1);
@@ -614,6 +622,7 @@ static const luaL_Reg KZWindowBind[] = {
     {"End3DDrawing", KZWindowBindEnd3DDrawing},
     {"Clear3DDrawing", KZWindowBindClear3DDrawing},
     {"Add3DVertex", KZWindowBindAdd3DVertex},
+    {"ResizeWindow", KZWindowBindResizeWindow},
     {NULL, NULL}
 };
 

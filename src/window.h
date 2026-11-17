@@ -40,8 +40,8 @@ public:
     //we need to convert the surface to texture before drawing
     SDL_Texture * pMainTexture = nullptr;
 
-    const int Width = 256 * 2;
-    const int Height = 244 * 2;
+    int Width = 256 * 2;
+    int Height = 244 * 2;
 
     unsigned int TargetDelay = 16; // 60 FPS default
 
@@ -49,11 +49,13 @@ public:
     void Destroy();
 
     void UpdateWindow();
+    bool ResetSurface();
 
     //Window
 
     bool ChangeWindowTitle(const char * pnewtitle);
     void SetTargetDelay(unsigned int delay) { TargetDelay = delay; }
+    bool ResizeWindow(int new_w, int new_h);
 
     //Drawing
 
