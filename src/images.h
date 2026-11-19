@@ -20,6 +20,7 @@
 #define PLUSKAIZO_IMAGES_H
 
 #include <SDL3/SDL_surface.h>
+#include <stdexcept>
 #include <unordered_map>
 
 class CKZImages
