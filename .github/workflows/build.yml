@@ -1,0 +1,129 @@
+name: Build Artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+        
+      - name: Prepare Linux
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install build-essential git make \
+          pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
+          libaudio-dev libfribidi-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+          libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+          libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev \
+          libusb-1.0-0-dev libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
+
+      - name: Install SDL3
+        uses: libsdl-org/setup-sdl@main
+        id: sdl
+        with:
+          install-linux-dependencies: true
+          version: 3-latest
+          version-sdl-image: 3-latest
+
+      - name: Build KZFramework
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          make
+
+      - name: Prepare artifact
+        run: |
+          cd build
+          mkdir KZFramework-Linux
+          mv ./KZGameRunner ./KZFramework-Linux/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KZFramework-ubuntu-22.04
+          path: build/KZFramework-Linux
+
+
+  build-windows:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+        
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          update: true
+          install: >
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-sdl3
+            mingw-w64-x86_64-sdl3-image
+            mingw-w64-x86_64-sdl3-mixer
+            mingw-w64-x86_64-sdl3-ttf
+
+      - name: Build KZFramework
+        shell: msys2 {0}
+        run: |
+          mkdir -p build
+          cd build
+          cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ ..
+          mingw32-make
+
+      - name: Prepare artifact
+        run: |
+          cd build
+          mkdir KZFramework-Windows
+          mv ./KZGameRunner.exe ./KZFramework-Windows/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KZFramework-windows
+          path: build/KZFramework-Windows
+  build-macos:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+        
+      - name: Prepare macOS
+        run: |
+          brew install cmake sdl3
+
+      - name: Build KZFramework
+        run: |
+          mkdir -p build
+          cd build
+          cmake ..
+          make
+
+      - name: Prepare artifact
+        run: |
+          cd build
+          mkdir KZFramework-macOS
+          mv ./KZGameRunner ./KZFramework-macOS/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KZFramework-macOS-14
+          path: build/KZFramework-macOS
+
+
+
+
+          
