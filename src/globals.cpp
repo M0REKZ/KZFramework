@@ -27,7 +27,7 @@ void CKZGlobals::SetGameName(const char * p_name)
 {
     if(p_name && !Locked)
     {
-        strlcpy(GameName, p_name, sizeof(GameName));
+        SDL_strlcpy(GameName, p_name, sizeof(GameName));
         KZFiles.ResetSavePath();
     }
 }
@@ -36,7 +36,7 @@ void CKZGlobals::SetGameOrg(const char * p_name)
 {
     if(p_name && !Locked)
     {
-        strlcpy(GameOrg, p_name, sizeof(GameOrg));
+        SDL_strlcpy(GameOrg, p_name, sizeof(GameOrg));
         KZFiles.ResetSavePath();
     }
 }
